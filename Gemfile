@@ -2,55 +2,38 @@ source "https://rubygems.org"
 
 ruby "3.4.1"
 
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3"
 
-# Shared backend
+# Shared backend engine
 gem 'core', path: "../core"
 
-# The high-performance API framework
+# --- API Framework ---
 gem 'grape'
-gem 'grape-entity'
 
-# Ultra-fast serialization
+# --- Serialization ---
 gem 'blueprinter'
-
-# High-speed JSON parsing/generation
 gem 'oj'
 
-# Authentication
+# --- Authentication ---
 gem 'jwt'
 
-# Efficient pagination
+# --- Pagination ---
 gem 'pagy', '~> 6.2'
 
-# Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
-
-# Use the Puma web server [https://github.com/puma/puma]
-gem "puma", ">= 5.0"
-
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
-
-# CORS for cross-origin APIs
+# --- Security ---
 gem 'rack-cors'
+gem 'rack-attack'
 
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+# --- Infrastructure ---
+gem "pg", "~> 1.1"
+gem "puma", ">= 5.0"
 gem "solid_cache"
 gem "solid_queue"
-gem "solid_cable"
-
-# Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-  
   gem "bundler-audit", require: false
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
