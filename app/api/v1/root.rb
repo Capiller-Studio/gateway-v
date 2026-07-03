@@ -9,5 +9,9 @@ module V1
     mount V1::Resources::Sessions
     mount V1::Resources::Registrations
     mount V1::Resources::Me
+    mount V1::Resources::Inboxes
+    mount V1::Resources::Customers
+    mount V1::Resources::Conversations
+    mount V1::Resources::Messages
   end
 end

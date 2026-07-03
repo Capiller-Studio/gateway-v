@@ -28,15 +28,25 @@
 threads_count = ENV.fetch("RAILS_MAX_THREADS", 3)
 threads threads_count, threads_count
 
-# Specifies the `port` that Puma will listen on to receive requests; default is 3000.
-port ENV.fetch("PORT", 3000) if ENV.fetch("RAILS_ENV", "development") == "development"
+if ENV.fetch("RAILS_ENV", "development") == "production"
+  workers ENV.fetch("WEB_CONCURRENCY", 2)
+  preload_app!
+  
+  pidfile ENV.fetch("PIDFILE", "tmp/pids/puma.pid")
+  state_path "tmp/pids/puma.state"
+
+  # Bind to a Unix socket for maximum local proxy performance
+  bind "unix://#{File.expand_path('../tmp/sockets/puma.sock', __dir__)}"
+  
+  # Also bind to a TCP port for cross-server proxying (Caddy on Edge -> App Node)
+  port ENV.fetch("PORT", 3000)
+else
+  port ENV.fetch("PORT", 3000)
+  pidfile ENV.fetch("PIDFILE", "tmp/pids/server.pid")
+end
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
-# Run the Solid Queue supervisor inside of Puma for single-server deployments.
+# Run the Solid Queue supervisor inside of Puma for single-server deployments
 plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
-
-# Specify the PID file. Defaults to tmp/pids/server.pid in development.
-# In other environments, only set the PID file if requested.
-pidfile ENV["PIDFILE"] if ENV["PIDFILE"]

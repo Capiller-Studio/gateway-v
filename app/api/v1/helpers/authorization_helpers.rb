@@ -12,7 +12,7 @@ module V1
           error!({
             errors: [{
               code: "forbidden",
-              message: "You do not have permission to perform this action",
+              message: I18n.t("gateway.errors.forbidden", default: "You do not have permission to perform this action"),
               permission: permission
             }]
           }, 403)

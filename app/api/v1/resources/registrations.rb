@@ -4,13 +4,15 @@ module V1
   module Resources
     class Registrations < Grape::API
       resource :registrations do
+        before { authenticate_mobile_app! }
+
         desc 'Register a new user, account, or affiliate profile'
         params do
-          requires :email, type: String, desc: 'User email'
-          requires :password, type: String, desc: 'User password'
-          optional :first_name, type: String
-          optional :last_name, type: String
-          optional :account_name, type: String, desc: 'Name for new account (creates account with owner role)'
+          requires :email, type: String, regexp: URI::MailTo::EMAIL_REGEXP, desc: 'User email'
+          requires :password, type: String, allow_blank: false, length: { minimum: 6, maximum: 128 }, desc: 'User password'
+          optional :first_name, type: String, length: { maximum: 255 }
+          optional :last_name, type: String, length: { maximum: 255 }
+          optional :account_name, type: String, length: { maximum: 255 }, desc: 'Name for new account (creates account with owner role)'
           optional :as_affiliate, type: Boolean, default: false, desc: 'Also create an affiliate profile'
           optional :invitation_token, type: String, desc: 'Token for joining an existing account'
         end

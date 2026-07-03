@@ -4,7 +4,31 @@ module V1
   module Helpers
     module AuthHelpers
       def authenticate_user!
-        error!({ errors: [{ code: "unauthorized", message: "Authentication required" }] }, 401) unless current_user
+        error!({ errors: [{ code: "unauthorized", message: I18n.t("gateway.errors.unauthorized", default: "Authentication required") }] }, 401) unless current_user
+      end
+
+      def authenticate_mobile_app!
+        expected_secret = Rails.application.credentials.dig(Rails.env.to_sym, :mobile_app_secret) || 
+                          Rails.application.credentials.dig(:mobile_app_secret) || 
+                          ENV['MOBILE_APP_SECRET'] || "dev_mobile_secret_123"
+                          
+        provided_secret = headers['X-Mobile-App-Secret']
+        
+        unless provided_secret.present? && ActiveSupport::SecurityUtils.secure_compare(expected_secret.to_s, provided_secret)
+          error!({ errors: [{ code: "forbidden", message: I18n.t("gateway.errors.mobile_app_restricted", default: "Registration is restricted to the internal mobile app.") }] }, 403)
+        end
+      end
+
+      def check_api_feature!
+        unless current_account&.has_feature?("channels.api")
+          error!({ errors: [{ code: "forbidden", message: I18n.t("gateway.errors.feature_disabled", default: "API Channel feature is not enabled for your account.") }] }, 403)
+        end
+      end
+
+      def check_subscription!
+        unless current_account&.active_subscription?
+          error!({ errors: [{ code: "payment_required", message: I18n.t("gateway.errors.subscription_inactive", default: "Your account subscription is inactive or limit reached. Payment is required.") }] }, 402)
+        end
       end
 
       def current_user
