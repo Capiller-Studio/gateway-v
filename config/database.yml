@@ -4,8 +4,8 @@ default: &default
   username: <%= ENV.fetch('DB_USERNAME') { 'postgres' } %>
   password: <%= ENV.fetch('DB_PASSWORD') { 'postgres' } %>
   host: <%= ENV['DB_HOST'] %>
-  pool: 200
-  timeout: 100000
+  pool: <%= ENV.fetch("DB_POOL", ENV.fetch("RAILS_MAX_THREADS", 5)) %>
+  timeout: 5000
 
 development:
   primary:
@@ -15,14 +15,14 @@ development:
     <<: *default
     database: deskbolic_development
     replica: true
-  primary_de:
+  de:
     <<: *default
     database: deskbolic_de_development
     migrations_paths:
       - db/migrate_shards
       - <%= Core::Engine.root.join("db/migrate_shards") %>
     database_tasks: true
-  primary_de_replica:
+  de_replica:
     <<: *default
     database: deskbolic_de_development
     replica: true
@@ -35,14 +35,14 @@ test:
     <<: *default
     database: deskbolic_test
     replica: true
-  primary_de:
+  de:
     <<: *default
     database: deskbolic_de_test
     migrations_paths:
       - db/migrate_shards
       - <%= Core::Engine.root.join("db/migrate_shards") %>
     database_tasks: true
-  primary_de_replica:
+  de_replica:
     <<: *default
     database: deskbolic_de_test
     replica: true
@@ -59,7 +59,7 @@ production:
     username: <%= Rails.application.credentials.db_username %>
     password: <%= Rails.application.credentials.db_password %>
     replica: true
-  primary_de:
+  de:
     <<: *default
     database: deskbolic_de_production
     username: <%= Rails.application.credentials.db_username %>
@@ -68,7 +68,7 @@ production:
       - db/migrate_shards
       - <%= Core::Engine.root.join("db/migrate_shards") %>
     database_tasks: true
-  primary_de_replica:
+  de_replica:
     <<: *default
     database: deskbolic_de_production
     username: <%= Rails.application.credentials.db_username %>
@@ -87,7 +87,7 @@ staging:
     username: <%= Rails.application.credentials.db_username %>
     password: <%= Rails.application.credentials.db_password %>
     replica: true
-  primary_de:
+  de:
     <<: *default
     database: deskbolic_de_staging
     username: <%= Rails.application.credentials.db_username %>
@@ -96,7 +96,7 @@ staging:
       - db/migrate_shards
       - <%= Core::Engine.root.join("db/migrate_shards") %>
     database_tasks: true
-  primary_de_replica:
+  de_replica:
     <<: *default
     database: deskbolic_de_staging
     username: <%= Rails.application.credentials.db_username %>
