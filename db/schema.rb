@@ -466,6 +466,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
     t.datetime "trial_end_at"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["account_id", "status"], name: "index_subscriptions_on_account_id_and_status"
+    t.index ["account_id"], name: "idx_uniq_active_subscription_account", unique: true, where: "(status = ANY (ARRAY[0, 1]))"
     t.index ["account_id"], name: "index_subscriptions_on_account_id"
     t.index ["current_period_end"], name: "index_subscriptions_on_current_period_end"
     t.index ["external_id"], name: "index_subscriptions_on_external_id"
@@ -553,6 +554,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
     t.string "unlock_token"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "username"
+    t.index ["address_id"], name: "index_users_on_address_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["connection_token"], name: "index_users_on_connection_token", unique: true
     t.index ["created_at"], name: "index_users_on_created_at"
