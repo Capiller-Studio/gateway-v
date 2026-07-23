@@ -4,7 +4,6 @@ module Defaults
   extend ActiveSupport::Concern
 
   included do
-    prefix "api"
     format :json
     formatter :json, Grape::Formatter::Oj
 
