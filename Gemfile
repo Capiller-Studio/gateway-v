@@ -18,7 +18,6 @@ gem "solid_cache"
 gem "solid_queue"
 
 group :development, :test do
-  gem 'dotenv-rails'
   gem 'pry'
   gem 'pry-rails'
   gem 'awesome_print'
