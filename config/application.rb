@@ -19,8 +19,6 @@ module Gateway
     config.api_only = true
     config.middleware.use Rack::Attack
 
-    # Autoload Grape API
-    config.paths.add File.join('app', 'api'), glob: File.join('**', '*.rb')
-    config.autoload_paths += Dir[Rails.root.join('app', 'api', '*')]
+    # Autoload Grape API handled by Zeitwerk by default in Rails 7+
   end
 end
