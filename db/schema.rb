@@ -42,8 +42,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
     t.integer "status", default: 0, null: false
     t.string "token", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "email"], name: "index_account_invitations_on_account_id_and_email", unique: true, where: "(status = 0)"
     t.index ["account_id"], name: "index_account_invitations_on_account_id"
-    t.index ["email"], name: "index_account_invitations_on_email"
     t.index ["invited_by_id"], name: "index_account_invitations_on_invited_by_id"
     t.index ["status"], name: "index_account_invitations_on_status"
     t.index ["token"], name: "index_account_invitations_on_token", unique: true
@@ -236,7 +236,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
     t.index ["created_at"], name: "index_affiliate_profiles_on_created_at"
     t.index ["currency"], name: "index_affiliate_profiles_on_currency"
     t.index ["referral_code"], name: "index_affiliate_profiles_on_referral_code", unique: true
-    t.index ["user_id"], name: "index_affiliate_profiles_on_user_id"
+    t.index ["user_id"], name: "index_affiliate_profiles_on_user_id", unique: true
   end
 
   create_table "affiliate_referrals", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -245,7 +245,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "status", default: 0
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["account_id"], name: "index_affiliate_referrals_on_account_id"
+    t.index ["account_id"], name: "index_affiliate_referrals_on_account_id", unique: true
     t.index ["affiliate_profile_id"], name: "index_affiliate_referrals_on_affiliate_profile_id"
     t.index ["created_at"], name: "index_affiliate_referrals_on_created_at"
     t.index ["status"], name: "index_affiliate_referrals_on_status"
