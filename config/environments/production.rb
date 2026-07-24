@@ -24,7 +24,7 @@ Rails.application.configure do
   end
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  config.active_storage.service = :amazon
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true
@@ -49,7 +49,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Replace the default in-process memory cache store with a durable alternative.
-  # config.cache_store = :mem_cache_store
+  config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } }
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   # config.active_job.queue_adapter = :resque
@@ -87,5 +87,17 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.default_url_options = { host: "api.deskbolic.com" }
+  config.action_mailer.default_url_options = { host: ENV.fetch("GATEWAY_URL", "https://api.deskbolic.com") }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    user_name: Rails.application.credentials.smtp_username,
+    password: Rails.application.credentials.smtp_password,
+    address: "mail.deskbolic.com",
+    port: 465,
+    domain: ENV.fetch("MAIN_DOMAIN", "deskbolic.com"),
+    authentication: "plain",
+    enable_starttls_auto: true,
+    ssl: true
+  }
+  
 end
