@@ -88,6 +88,9 @@ Rails.application.configure do
 
   # config.action_mailer.raise_delivery_errors = false
   config.action_mailer.default_url_options = { host: ENV.fetch("GATEWAY_URL", "https://api.deskbolic.com") }
+  config.action_cable.url = ENV.fetch("ACTION_CABLE_URL", "wss://ws.deskbolic.com")
+  config.action_cable.allowed_request_origins = [ %r{http://*}, %r{https://*}, %r{file://*}, "file://", nil, "" ]
+  
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     user_name: Rails.application.credentials.smtp_username,
