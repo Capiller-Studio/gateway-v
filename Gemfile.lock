@@ -11,6 +11,7 @@ PATH
       devise
       down
       elasticsearch
+      email_reply_parser
       facebook-messenger
       flag_shih_tzu
       groupdate
@@ -244,6 +245,7 @@ GEM
     elasticsearch-api (9.3.1)
       base64
       multi_json
+    email_reply_parser (0.5.11)
     erb (6.0.6)
     erubi (1.13.1)
     et-orbi (1.4.0)
@@ -792,6 +794,7 @@ CHECKSUMS
   elastic-transport (8.5.1) sha256=5eeae78f791840f2d4f35d2f3826903098e360f20f838e20b304b73a302ac04d
   elasticsearch (9.3.1) sha256=ca39fb73b0f5f5434d51e74be602c9153b46bbfe5168e09d383e88349c21ea24
   elasticsearch-api (9.3.1) sha256=9c9a44ed55dcbf0c0fe0fb8ca770d0281301cedd41ef4ad1f1d9ebb3830da672
+  email_reply_parser (0.5.11) sha256=117552df73d781619390f6f1fc578d4fa2acbb2ea878136e63854d0da515e079
   erb (6.0.6) sha256=a9b24986700f5bf127c4f297c5403c3ca41b83b0a316c0cd09a096b56e644ae5
   erubi (1.13.1) sha256=a082103b0885dbc5ecf1172fede897f9ebdb745a4b97a5e8dc63953db1ee4ad9
   et-orbi (1.4.0) sha256=6c7e3c90779821f9e3b324c5e96fda9767f72995d6ae435b96678a4f3e2de8bc
