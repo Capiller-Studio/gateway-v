@@ -36,3 +36,4 @@
 /config/master.key
 
 /config/credentials.yml.enc
+node_modules/
