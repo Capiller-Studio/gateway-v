@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_27_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -594,6 +594,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_15_000002) do
     t.string "currency", limit: 4, default: "USD", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["account_id"], name: "index_wallets_on_account_id", unique: true
+  end
+
+  create_table "webhook_incomings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.text "error_message"
+    t.string "event_type", limit: 100
+    t.integer "fail_safe_retries", default: 0, null: false
+    t.jsonb "headers", default: {}, null: false
+    t.jsonb "payload", default: {}, null: false
+    t.text "request_url"
+    t.string "source", limit: 50, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["created_at"], name: "index_webhook_incomings_on_created_at"
+    t.index ["source", "status"], name: "index_webhook_incomings_on_source_and_status"
   end
 
   add_foreign_key "account_invitations", "accounts", on_delete: :cascade
