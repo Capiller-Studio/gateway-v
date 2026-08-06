@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -64,6 +64,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
     t.index ["object_snapshot"], name: "index_activities_on_object_snapshot_gin", using: :gin
     t.index ["trackable_type", "trackable_id", "created_at"], name: "index_activities_on_trackable_and_created_at"
     t.index ["trackable_type", "trackable_id"], name: "index_activities_on_trackable"
+  end
+
+  create_table "ai_agent_translations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "agent_id", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "fallback_message"
+    t.string "greeting_message"
+    t.string "handoff_message"
+    t.string "locale", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["agent_id", "locale"], name: "index_ai_agent_translations_on_agent_id_and_locale", unique: true
+  end
+
+  create_table "ai_agents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.integer "agent_type", default: 0, null: false
+    t.float "confidence_threshold", default: 0.7, null: false
+    t.jsonb "configurations", default: {}, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "language", default: "en", null: false
+    t.integer "max_exchanges", default: 5, null: false
+    t.string "name", default: "AI Assistant", null: false
+    t.uuid "portal_id"
+    t.integer "status", default: 0, null: false
+    t.text "system_prompt"
+    t.integer "tone", default: 0, null: false
+    t.integer "total_conversations", default: 0, null: false
+    t.integer "total_handoffs", default: 0, null: false
+    t.integer "total_resolutions", default: 0, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "status"], name: "index_ai_agents_on_account_id_and_status"
+    t.index ["account_id"], name: "index_ai_agents_on_account_id"
+    t.index ["portal_id"], name: "index_ai_agents_on_portal_id"
   end
 
   create_table "applied_labels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -505,6 +538,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
 
   create_table "conversations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
+    t.jsonb "ai_metadata", default: {}, null: false
+    t.integer "ai_status", default: 0, null: false
     t.uuid "assignee_id"
     t.jsonb "configurations", default: {}, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -524,6 +559,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
     t.uuid "team_id"
     t.string "title"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "ai_status"], name: "index_conversations_on_account_id_and_ai_status"
     t.index ["account_id", "created_at"], name: "index_conversations_on_account_id_and_created_at"
     t.index ["account_id", "external_id"], name: "index_conversations_on_account_id_and_external_id"
     t.index ["account_id", "identifier"], name: "index_conversations_on_account_id_and_identifier", unique: true
@@ -532,6 +568,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
     t.index ["account_id", "status"], name: "index_conversations_on_account_id_and_status"
     t.index ["account_id", "title"], name: "index_conversations_on_account_id_and_title"
     t.index ["account_id"], name: "index_conversations_on_account_id"
+    t.index ["ai_metadata"], name: "index_conversations_on_ai_metadata", using: :gin
     t.index ["assignee_id"], name: "index_conversations_on_assignee_id"
     t.index ["inbox_id"], name: "index_conversations_on_inbox_id"
     t.index ["outbound_channel_type", "outbound_channel_id"], name: "index_conversations_on_outbound_channel"
@@ -784,8 +821,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
   end
 
   create_table "help_center_article_translations", force: :cascade do |t|
+    t.boolean "ai_training_synced", default: false, null: false
     t.uuid "article_id", null: false
     t.text "content"
+    t.jsonb "content_embedding"
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "draft_content"
     t.string "draft_title"
@@ -797,6 +836,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
     t.string "slug"
     t.string "title"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["ai_training_synced"], name: "index_help_center_article_translations_on_ai_training_synced"
     t.index ["article_id", "locale"], name: "idx_on_article_id_locale_b93b0eb9fb", unique: true
     t.index ["article_id", "slug"], name: "index_help_center_article_translations_on_article_id_and_slug"
     t.index ["article_id"], name: "index_help_center_article_translations_on_article_id"
@@ -1028,6 +1068,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
 
   create_table "inboxes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
+    t.uuid "ai_agent_id"
     t.uuid "business_hour_group_id"
     t.uuid "channel_id", null: false
     t.string "channel_type", null: false
@@ -1048,6 +1089,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
     t.index ["account_id", "name"], name: "index_inboxes_on_account_id_and_name"
     t.index ["account_id", "status"], name: "index_inboxes_on_account_id_and_status"
     t.index ["account_id"], name: "index_inboxes_on_account_id"
+    t.index ["ai_agent_id"], name: "index_inboxes_on_ai_agent_id"
     t.index ["business_hour_group_id"], name: "index_inboxes_on_business_hour_group_id"
     t.index ["channel_type", "channel_id"], name: "index_inboxes_on_channel"
     t.index ["channel_type", "channel_id"], name: "index_inboxes_on_channel_primary", unique: true, where: "(primary_inbox = true)"
@@ -1124,6 +1166,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
 
   create_table "messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
+    t.jsonb "ai_metadata", default: {}, null: false
     t.jsonb "configurations", default: {}, null: false
     t.text "content"
     t.integer "content_type", default: 0, null: false
@@ -1138,13 +1181,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
     t.string "outbound_channel_type"
     t.uuid "sender_id", null: false
     t.string "sender_type", null: false
-    t.jsonb "sentiment", default: {}, null: false
     t.integer "source"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "visibility", default: 1, null: false
     t.index ["account_id", "external_id"], name: "index_messages_on_account_id_and_external_id"
     t.index ["account_id"], name: "index_messages_on_account_id"
+    t.index ["ai_metadata"], name: "index_messages_on_ai_metadata", using: :gin
     t.index ["conversation_id", "content_type"], name: "index_messages_on_conversation_id_and_content_type"
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
     t.index ["conversation_id", "status"], name: "index_messages_on_conversation_id_and_status"
@@ -1341,6 +1384,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
   end
 
   add_foreign_key "access_account_user_roles", "access_roles", column: "role_id", on_delete: :cascade
+  add_foreign_key "ai_agent_translations", "ai_agents", column: "agent_id", on_delete: :cascade
+  add_foreign_key "ai_agents", "help_center_portals", column: "portal_id", on_delete: :nullify
   add_foreign_key "assignment_policies", "business_hour_groups", on_delete: :nullify
   add_foreign_key "assignment_policy_inboxes", "assignment_policies", on_delete: :cascade
   add_foreign_key "assignment_policy_inboxes", "inboxes", on_delete: :cascade
@@ -1384,6 +1429,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_125000) do
   add_foreign_key "inbox_teams", "teams", on_delete: :cascade
   add_foreign_key "inbox_translations", "inboxes", on_delete: :cascade
   add_foreign_key "inbox_users", "inboxes", on_delete: :cascade
+  add_foreign_key "inboxes", "ai_agents", on_delete: :nullify
   add_foreign_key "inboxes", "business_hour_groups", on_delete: :nullify
   add_foreign_key "inboxes", "csat_surveys", on_delete: :nullify
   add_foreign_key "inboxes", "email_templates", column: "conversation_reply_template_id", on_delete: :nullify

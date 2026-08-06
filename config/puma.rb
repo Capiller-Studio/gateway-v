@@ -38,7 +38,7 @@ if ENV.fetch("RAILS_ENV", "development") == "production"
   # Bind to a Unix socket for maximum local proxy performance
   bind "unix://#{File.expand_path('../tmp/sockets/puma.sock', __dir__)}"
   
-  # Also bind to a TCP port for cross-server proxying (Caddy on Edge -> App Node)
+  # Also bind to a TCP port for cross-server proxying (Cloudflare Proxy -> Edge -> App Node)
   port ENV.fetch("PORT", 3000)
 else
   port ENV.fetch("PORT", 3000)
