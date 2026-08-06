@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_27_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_075126) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -251,6 +251,46 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_000000) do
     t.index ["status"], name: "index_affiliate_referrals_on_status"
   end
 
+  create_table "ai_credit_grants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "ai_wallet_id", null: false
+    t.integer "amount", null: false
+    t.integer "balance", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.jsonb "data", default: {}
+    t.string "description"
+    t.datetime "expires_at", null: false
+    t.integer "grant_type", default: 0, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["ai_wallet_id"], name: "index_ai_credit_grants_on_ai_wallet_id"
+    t.index ["expires_at"], name: "index_ai_credit_grants_on_expires_at"
+  end
+
+  create_table "ai_wallet_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.string "action_type"
+    t.uuid "ai_wallet_id", null: false
+    t.integer "amount", null: false
+    t.integer "balance_after", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.jsonb "data", default: {}
+    t.string "description"
+    t.string "model_used"
+    t.integer "transaction_type", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.uuid "user_id"
+    t.index ["account_id"], name: "index_ai_wallet_transactions_on_account_id"
+    t.index ["ai_wallet_id"], name: "index_ai_wallet_transactions_on_ai_wallet_id"
+    t.index ["user_id"], name: "index_ai_wallet_transactions_on_user_id"
+  end
+
+  create_table "ai_wallets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.integer "balance", default: 0, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id"], name: "index_ai_wallets_on_account_id_unique", unique: true
+  end
+
   create_table "countries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "iso", null: false
@@ -459,6 +499,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_000000) do
     t.datetime "current_period_start"
     t.jsonb "data", default: {}, null: false
     t.string "external_id"
+    t.datetime "next_usage_reset_at"
     t.uuid "plan_id", null: false
     t.integer "provider", default: 0, null: false
     t.integer "quantity", default: 1, null: false
@@ -470,6 +511,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_000000) do
     t.index ["account_id"], name: "index_subscriptions_on_account_id"
     t.index ["current_period_end"], name: "index_subscriptions_on_current_period_end"
     t.index ["external_id"], name: "index_subscriptions_on_external_id"
+    t.index ["next_usage_reset_at"], name: "index_subscriptions_on_next_usage_reset_at"
     t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
     t.index ["status"], name: "index_subscriptions_on_status"
     t.index ["trial_end_at"], name: "index_subscriptions_on_trial_end_at"
@@ -631,6 +673,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_27_000000) do
   add_foreign_key "affiliate_profiles", "users", on_delete: :cascade
   add_foreign_key "affiliate_referrals", "accounts", on_delete: :cascade
   add_foreign_key "affiliate_referrals", "affiliate_profiles", on_delete: :cascade
+  add_foreign_key "ai_credit_grants", "ai_wallets"
+  add_foreign_key "ai_wallet_transactions", "ai_wallets"
+  add_foreign_key "ai_wallets", "accounts"
   add_foreign_key "country_translations", "countries", on_delete: :cascade
   add_foreign_key "domains", "accounts", on_delete: :cascade
   add_foreign_key "global_routings", "accounts", on_delete: :cascade
