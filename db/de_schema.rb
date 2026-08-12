@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -306,6 +306,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
 
   create_table "channel_contact_forms", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
+    t.string "allowed_hosts", default: [], array: true
     t.jsonb "configurations", default: {}, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "flags", default: 0, null: false
@@ -448,6 +449,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
 
   create_table "channel_web_widgets", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
+    t.string "allowed_hosts", default: [], array: true
     t.jsonb "configurations", default: {}, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.jsonb "data", default: {}, null: false
@@ -462,15 +464,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
     t.integer "status", default: 0, null: false
     t.jsonb "ui_configurations", default: {}, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.string "website_url"
     t.index ["account_id", "created_at"], name: "index_channel_web_widgets_on_account_id_and_created_at"
     t.index ["account_id", "name"], name: "index_channel_web_widgets_on_account_id_and_name"
     t.index ["account_id"], name: "index_channel_web_widgets_on_account_id"
     t.index ["fallback_channel_type", "fallback_channel_id"], name: "index_web_widgets_on_fallback_channel"
     t.index ["portal_id"], name: "index_channel_web_widgets_on_portal_id"
     t.index ["pre_chat_form_id"], name: "index_channel_web_widgets_on_pre_chat_form_id"
+    t.index ["secret"], name: "index_channel_web_widgets_on_secret", unique: true
     t.index ["status"], name: "index_channel_web_widgets_on_status"
-    t.index ["website_url"], name: "index_channel_web_widgets_on_website_url"
   end
 
   create_table "channel_whatsapps", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -559,7 +560,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
     t.uuid "team_id"
     t.string "title"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["account_id", "ai_status"], name: "index_conversations_on_account_id_and_ai_status"
     t.index ["account_id", "created_at"], name: "index_conversations_on_account_id_and_created_at"
     t.index ["account_id", "external_id"], name: "index_conversations_on_account_id_and_external_id"
     t.index ["account_id", "identifier"], name: "index_conversations_on_account_id_and_identifier", unique: true
