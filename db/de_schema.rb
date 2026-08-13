@@ -854,6 +854,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.uuid "portal_id", null: false
     t.integer "position"
     t.uuid "primary_category_id"
+    t.jsonb "stats", default: {}, null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "views_count", default: 0, null: false
@@ -881,8 +882,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.string "icon_key"
     t.uuid "portal_id", null: false
     t.integer "position"
+    t.integer "published_articles_count", default: 0, null: false
+    t.jsonb "stats", default: {}, null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "views_count", default: 0, null: false
     t.integer "visibility", default: 0, null: false
     t.index ["account_id"], name: "index_help_center_categories_on_account_id"
     t.index ["portal_id", "ancestry"], name: "index_help_center_categories_on_portal_id_and_ancestry"
