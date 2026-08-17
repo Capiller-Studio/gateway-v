@@ -190,6 +190,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
   end
 
   create_table "affiliate_payout_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "code", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.jsonb "data", default: {}
     t.string "external_id"
@@ -197,6 +198,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.string "name"
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["code"], name: "index_affiliate_payout_batches_on_code", unique: true
     t.index ["created_at"], name: "index_affiliate_payout_batches_on_created_at"
     t.index ["external_id"], name: "index_affiliate_payout_batches_on_external_id"
     t.index ["status"], name: "index_affiliate_payout_batches_on_status"
@@ -205,6 +207,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
   create_table "affiliate_payouts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "affiliate_profile_id", null: false
     t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "code", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "currency", null: false
     t.jsonb "data", default: {}
@@ -214,6 +217,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.integer "status", default: 0
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["affiliate_profile_id"], name: "index_affiliate_payouts_on_affiliate_profile_id"
+    t.index ["code"], name: "index_affiliate_payouts_on_code", unique: true
     t.index ["created_at"], name: "index_affiliate_payouts_on_created_at"
     t.index ["external_id"], name: "index_affiliate_payouts_on_external_id"
     t.index ["payout_batch_id"], name: "index_affiliate_payouts_on_payout_batch_id"
