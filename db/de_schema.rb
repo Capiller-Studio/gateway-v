@@ -210,16 +210,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.text "description"
     t.string "event_name"
     t.integer "flags", default: 0, null: false
-    t.boolean "is_system", default: false, null: false
     t.string "name", null: false
     t.integer "position"
     t.integer "status", default: 0, null: false
+    t.boolean "system_provided", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["account_id", "automation_type", "event_name", "status"], name: "idx_automations_event_lookup"
     t.index ["account_id", "automation_type", "status", "position"], name: "idx_automations_execution_order"
     t.index ["account_id", "created_at"], name: "index_automations_on_account_id_and_created_at"
-    t.index ["account_id", "is_system"], name: "index_automations_on_account_id_and_is_system"
     t.index ["account_id", "name"], name: "index_automations_on_account_id_and_name"
+    t.index ["account_id", "system_provided"], name: "index_automations_on_account_id_and_system_provided"
     t.index ["account_id"], name: "index_automations_on_account_id"
   end
 
@@ -1135,17 +1135,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "description"
     t.integer "flags", default: 0, null: false
-    t.boolean "is_system", default: false, null: false
     t.string "name", null: false
     t.uuid "scopeable_id"
     t.string "scopeable_type"
     t.integer "status", default: 0, null: false
+    t.boolean "system_provided", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "visibility", default: 0, null: false
-    t.index ["account_id", "is_system"], name: "index_macros_on_account_id_and_is_system"
     t.index ["account_id", "name"], name: "index_macros_on_account_id_and_name"
     t.index ["account_id", "scopeable_type", "scopeable_id"], name: "idx_macros_scopeable"
     t.index ["account_id", "status"], name: "index_macros_on_account_id_and_status"
+    t.index ["account_id", "system_provided"], name: "index_macros_on_account_id_and_system_provided"
     t.index ["account_id", "visibility"], name: "index_macros_on_account_id_and_visibility"
     t.index ["account_id"], name: "index_macros_on_account_id"
     t.index ["created_at"], name: "index_macros_on_created_at"
