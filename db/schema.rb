@@ -49,6 +49,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.index ["token"], name: "index_account_invitations_on_token", unique: true
   end
 
+  create_table "account_plans", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.uuid "plan_id", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "plan_id"], name: "index_account_plans_on_account_id_and_plan_id", unique: true
+    t.index ["account_id"], name: "index_account_plans_on_account_id"
+    t.index ["plan_id", "account_id"], name: "index_account_plans_on_plan_id_and_account_id"
+    t.index ["plan_id"], name: "index_account_plans_on_plan_id"
+  end
+
   create_table "account_users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
     t.integer "availability", default: 0, null: false
@@ -196,7 +207,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.string "external_id"
     t.datetime "funded_at"
     t.string "name"
+    t.integer "provider", default: 0, null: false
     t.integer "status", default: 0, null: false
+    t.decimal "total_amount", precision: 12, scale: 2, default: "0.0"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["code"], name: "index_affiliate_payout_batches_on_code", unique: true
     t.index ["created_at"], name: "index_affiliate_payout_batches_on_created_at"
@@ -659,6 +672,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
 
   add_foreign_key "account_invitations", "accounts", on_delete: :cascade
   add_foreign_key "account_invitations", "users", column: "invited_by_id", on_delete: :nullify
+  add_foreign_key "account_plans", "accounts", on_delete: :cascade
+  add_foreign_key "account_plans", "plans", on_delete: :cascade
   add_foreign_key "account_users", "accounts", on_delete: :cascade
   add_foreign_key "account_users", "users", column: "invited_by_id", on_delete: :nullify
   add_foreign_key "account_users", "users", on_delete: :cascade
