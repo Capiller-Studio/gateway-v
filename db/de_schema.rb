@@ -482,11 +482,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.jsonb "data", default: {}, null: false
     t.integer "flags", default: 0, null: false
-    t.string "full_phone_number", null: false
+    t.string "full_phone_number"
     t.string "name"
     t.string "phone_code"
     t.string "phone_number"
-    t.string "phone_number_id"
+    t.string "phone_number_id", null: false
     t.integer "service", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
@@ -495,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.index ["account_id", "name"], name: "index_channel_whatsapps_on_account_id_and_name"
     t.index ["account_id"], name: "index_channel_whatsapps_on_account_id"
     t.index ["full_phone_number"], name: "index_channel_whatsapps_on_full_phone_number", unique: true
+    t.index ["phone_number_id"], name: "index_channel_whatsapps_on_phone_number_id", unique: true
     t.index ["service"], name: "index_channel_whatsapps_on_service"
     t.index ["status"], name: "index_channel_whatsapps_on_status"
   end
