@@ -5,7 +5,7 @@ module V1
     class InboxEntity < Blueprinter::Base
       identifier :id
 
-      fields :name, :channel_type, :greeting_enabled, :greeting_message, :created_at, :updated_at
+      fields :name, :display_name, :channel_type, :channel_id, :default_locale, :timezone, :status, :created_at, :updated_at
     end
   end
 end

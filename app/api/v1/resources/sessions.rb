@@ -16,7 +16,7 @@ module V1
             failure(errors: [{ code: "invalid_credentials", message: I18n.t("gateway.errors.invalid_credentials", default: "Invalid email or password") }], status: 401)
           end
 
-          token = JwtService.encode(user_id: user.id)
+          token = JwtService.encode({ user_id: user.id })
 
           success(
             data: {

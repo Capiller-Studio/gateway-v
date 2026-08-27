@@ -9,7 +9,7 @@ module V1
         desc 'Register a new user, account, or affiliate profile'
         params do
           requires :email, type: String, regexp: URI::MailTo::EMAIL_REGEXP, desc: 'User email'
-          requires :password, type: String, allow_blank: false, length: { minimum: 6, maximum: 128 }, desc: 'User password'
+          requires :password, type: String, allow_blank: false, password_format: true, desc: 'User password'
           optional :first_name, type: String, length: { maximum: 255 }
           optional :last_name, type: String, length: { maximum: 255 }
           optional :account_name, type: String, length: { maximum: 255 }, desc: 'Name for new account (creates account with owner role)'
@@ -17,13 +17,13 @@ module V1
           optional :invitation_token, type: String, desc: 'Token for joining an existing account'
         end
         post do
-          result = Accounts::RegistrationService.call(declared(params, include_missing: false))
+          result = Accounts::RegistrationService.call(**declared(params, include_missing: false).symbolize_keys)
 
           unless result.success?
             failure(errors: result.errors, status: 422)
           end
 
-          token = JwtService.encode(user_id: result.user.id)
+          token = JwtService.encode({ user_id: result.user.id })
 
           success(
             data: {

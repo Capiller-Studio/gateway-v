@@ -5,10 +5,12 @@ module V1
     class ConversationEntity < Blueprinter::Base
       identifier :id
 
-      fields :status, :priority, :source, :created_at, :updated_at
+      fields :identifier, :title, :status, :priority, :source, :last_activity_at, :created_at, :updated_at
 
       association :inbox, blueprint: InboxEntity
       association :assignee, blueprint: UserEntity
+      association :team, blueprint: TeamEntity
+      association :labels, blueprint: LabelEntity
     end
   end
 end

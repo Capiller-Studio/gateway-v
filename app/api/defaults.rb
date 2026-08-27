@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'v1/validators/password_format'
+
 module Defaults
   extend ActiveSupport::Concern
+
+  SUPPORTED_LOCALES = Core::SUPPORTED_LOCALES
 
   included do
     format :json
@@ -15,38 +19,48 @@ module Defaults
       def logger
         Rails.logger
       end
+
+      def detect_locale
+        raw_locale = params[:locale] || headers['X-Locale'] || env['HTTP_X_LOCALE'] || env['HTTP_ACCEPT_LANGUAGE']
+        return I18n.default_locale if raw_locale.blank?
+
+        normalized = raw_locale.to_s.split(',').first.to_s.strip.split(';').first.to_s.strip.tr('_', '-')
+
+        return :'pt-BR' if normalized.casecmp('pt').zero? || normalized.casecmp('pt-br').zero? || normalized.downcase.start_with?('pt-')
+
+        base = normalized.split('-').first.downcase.to_sym
+        return base if SUPPORTED_LOCALES.include?(base)
+
+        I18n.default_locale
+      end
     end
 
     before do
-      locale = params[:locale] || env['HTTP_X_LOCALE'] || headers['X-Locale'] || env['HTTP_ACCEPT_LANGUAGE']&.scan(/^[a-z]{2}/)&.first
-      I18n.locale = if locale.present? && I18n.available_locales.include?(locale.to_sym)
-                      locale.to_sym
-                    else
-                      I18n.default_locale
-                    end
+      I18n.locale = detect_locale
     end
 
     rescue_from ActiveRecord::RecordNotFound do |_e|
-      error_response(message: { error: I18n.t("gateway.errors.not_found", default: "Resource not found") }, status: 404)
+      error!({ errors: [{ code: "not_found", message: I18n.t("gateway.errors.not_found", default: "Resource not found") }] }, 404)
     end
 
     rescue_from ActiveRecord::RecordInvalid do |e|
       errors = e.record.errors.map { |err| { field: err.attribute.to_s, message: err.full_message } }
-      error_response(message: { errors: errors }, status: 422)
+      error!({ errors: errors }, 422)
     end
 
     rescue_from Grape::Exceptions::ValidationErrors do |e|
       errors = e.errors.map { |attrs, msgs| { field: attrs.first.to_s, message: msgs.first } }
-      error_response(message: { errors: errors }, status: 422)
+      error!({ errors: errors }, 422)
     end
 
     rescue_from :all do |e|
       if Rails.env.development?
         raise e
       else
-        Rails.logger.error "Unhandled error: #{e.class} — #{e.message}"
-        error_response(message: { error: I18n.t("gateway.errors.internal_error", default: "Internal server error") }, status: 500)
+        Rails.logger.error "Unhandled error: #{e.class} — #{e.message}\n#{e.backtrace&.first(15)&.join("\n")}"
+        error!({ errors: [{ code: "internal_error", message: I18n.t("gateway.errors.internal_error", default: "Internal server error") }] }, 500)
       end
     end
   end
 end
+

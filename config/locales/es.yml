@@ -1,0 +1,13 @@
+es:
+  gateway:
+    errors:
+      unauthorized: "Autenticación requerida"
+      forbidden: "No tienes permiso para realizar esta acción"
+      feature_disabled: "La función del canal API no está habilitada para tu cuenta."
+      subscription_inactive: "La suscripción de tu cuenta está inactiva o se alcanzó el límite. Se requiere pago."
+      mobile_app_restricted: "El registro está restringido a la aplicación móvil interna."
+      not_found: "Recurso no encontrado"
+      internal_error: "Error interno del servidor"
+      password_complexity: "debe tener al menos 8 caracteres e incluir al menos 1 letra mayúscula, 1 letra minúscula, 1 número y 1 carácter especial"
+      invalid_credentials: "Correo electrónico o contraseña no válidos"
+      rate_limited: "Demasiadas solicitudes. Por favor, inténtelo de nuevo más tarde."

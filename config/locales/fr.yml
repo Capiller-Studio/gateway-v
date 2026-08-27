@@ -1,0 +1,13 @@
+fr:
+  gateway:
+    errors:
+      unauthorized: "Authentification requise"
+      forbidden: "Vous n'avez pas l'autorisation d'effectuer cette action"
+      feature_disabled: "La fonctionnalité de canal API n'est pas activée pour votre compte."
+      subscription_inactive: "L'abonnement de votre compte est inactif ou la limite est atteinte. Paiement requis."
+      mobile_app_restricted: "L'inscription est réservée à l'application mobile interne."
+      not_found: "Ressource non trouvée"
+      internal_error: "Erreur interne du serveur"
+      password_complexity: "doit comporter au moins 8 caractères et inclure au moins 1 lettre majuscule, 1 lettre minuscule, 1 chiffre et 1 caractère spécial"
+      invalid_credentials: "Email ou mot de passe invalide"
+      rate_limited: "Trop de requêtes. Veuillez réessayer plus tard."

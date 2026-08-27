@@ -5,7 +5,11 @@ module V1
     class MessageEntity < Blueprinter::Base
       identifier :id
 
-      fields :content, :message_type, :status, :source, :sender_type, :sender_id, :created_at
+      fields :content, :content_type, :status, :source, :visibility, :sender_type, :sender_id, :created_at
+
+      field :private do |message|
+        message.personal?
+      end
       
       association :sender, blueprint: ->(sender) {
         if sender.is_a?(User)
@@ -14,6 +18,8 @@ module V1
           CustomerEntity
         end
       }
+
+      association :attachments, blueprint: AttachmentEntity
     end
   end
 end
