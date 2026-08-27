@@ -1108,7 +1108,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.integer "provider", null: false
     t.jsonb "settings", default: {}
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["account_id", "provider"], name: "index_integrations_on_account_id_and_provider", unique: true
+    t.index ["account_id", "provider"], name: "index_integrations_on_account_id_and_provider"
     t.index ["account_id"], name: "index_integrations_on_account_id"
     t.index ["created_at"], name: "index_integrations_on_created_at"
   end
