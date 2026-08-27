@@ -15,8 +15,6 @@ gem 'grape'
 gem 'blueprinter'
 gem 'jwt'
 gem 'rack-cors'
-gem "solid_cache"
-gem "solid_queue"
 
 group :development, :test do
   gem 'pry'
@@ -24,6 +22,11 @@ group :development, :test do
   gem 'awesome_print'
   gem 'factory_bot_rails'
   gem 'ffaker'
+  gem 'rspec-rails'
+  gem 'shoulda-matchers'
+  gem 'database_cleaner-active_record'
+  gem 'timecop'
+  gem 'pundit-matchers'
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
   gem "brakeman", require: false

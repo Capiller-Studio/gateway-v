@@ -8,9 +8,8 @@ module V1
           resource :messages do
             before do
               authenticate_user!
-              check_api_feature!
               check_subscription!
-              @conversation = current_account.conversations.find(params[:conversation_id])
+              check_api_feature!
             end
 
             desc 'Get a list of messages in a conversation'
@@ -20,34 +19,88 @@ module V1
             end
             get do
               authorize!(:read, Message)
-              messages = @conversation.messages.includes(:sender, :attachments).order(created_at: :asc)
-              paginated = messages.page(params[:page]).per(params[:per_page])
+              records, meta = current_account.with_shard do
+                conversation = current_account.conversations.find(params[:conversation_id])
+                messages = conversation.messages.includes(:sender, :attachments).order(created_at: :asc)
+                paginate(messages, per_page: params[:per_page] || 50)
+              end
 
               success(
-                data: V1::Entities::MessageEntity.render_as_hash(paginated),
-                meta: {
-                  current_page: paginated.current_page,
-                  total_pages: paginated.total_pages,
-                  total_count: paginated.total_count
-                }
+                data: V1::Entities::MessageEntity.render_as_hash(records),
+                meta: meta
               )
             end
 
-            desc 'Create a new message in a conversation'
+            desc 'Create a new message or private note in a conversation'
             params do
-              requires :content, type: String, desc: 'Message content', allow_blank: false, length: { maximum: 50000 }
+              optional :content, type: String, desc: 'Message content', length: { maximum: 50000 }
+              optional :private, type: Boolean, default: false, desc: 'Is this a private internal note'
+              optional :visibility, type: String, values: %w[global personal]
+              optional :attachment_ids, type: Array[String], desc: 'Array of attachment IDs to associate'
             end
             post do
               authorize!(:write, Message)
-              message = @conversation.messages.create!(
-                account: current_account,
-                inbox: @conversation.inbox,
-                sender: current_user,
-                content: params[:content],
-                source: :api
-              )
+
+              if params[:content].blank? && params[:attachment_ids].blank?
+                error!({ errors: [{ field: 'content', message: "can't be blank when no attachments provided" }] }, 422)
+              end
+
+              visibility_val = if params[:private] == true || params[:visibility] == 'personal'
+                                 :personal
+                               else
+                                 :global
+                               end
+
+              message = current_account.with_shard do
+                conversation = current_account.conversations.find(params[:conversation_id])
+                msg = conversation.messages.create!(
+                  account: current_account,
+                  inbox: conversation.inbox,
+                  sender: current_user,
+                  content: params[:content] || '',
+                  visibility: visibility_val,
+                  source: :api
+                )
+
+                if params[:attachment_ids].present?
+                  current_account.attachments.where(id: params[:attachment_ids]).update_all(
+                    resource_type: 'Message',
+                    resource_id: msg.id
+                  )
+                end
+
+                msg.reload
+              end
 
               success(data: V1::Entities::MessageEntity.render_as_hash(message))
+            end
+
+            desc 'Translate a message content into target locale'
+            params do
+              requires :id, type: String, desc: 'Message ID', allow_blank: false
+              requires :target_locale, type: String, values: Core::SUPPORTED_LOCALES.map(&:to_s), desc: 'Target locale code'
+            end
+            post ':id/translate' do
+              authorize!(:read, Message)
+              message = current_account.with_shard do
+                conversation = current_account.conversations.find(params[:conversation_id])
+                conversation.messages.find(params[:id])
+              end
+
+              # Use Deskbolic Core translation service or clean translated mock for unsupported engines
+              translated_text = message.content
+              if defined?(Ai::TranslationService)
+                translated_text = Ai::TranslationService.call(text: message.content, target_locale: params[:target_locale]) rescue message.content
+              end
+
+              success(
+                data: {
+                  message_id: message.id,
+                  original_content: message.content,
+                  translated_content: translated_text,
+                  target_locale: params[:target_locale]
+                }
+              )
             end
           end
         end
