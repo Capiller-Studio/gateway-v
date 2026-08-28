@@ -56,7 +56,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["account_id", "plan_id"], name: "index_account_plans_on_account_id_and_plan_id", unique: true
     t.index ["account_id"], name: "index_account_plans_on_account_id"
-    t.index ["plan_id", "account_id"], name: "index_account_plans_on_plan_id_and_account_id"
     t.index ["plan_id"], name: "index_account_plans_on_plan_id"
   end
 
@@ -181,16 +180,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.uuid "affiliate_profile_id", null: false
     t.uuid "affiliate_referral_id", null: false
     t.decimal "amount", precision: 10, scale: 2, null: false
-    t.integer "commission_type", default: 0
+    t.integer "commission_type", default: 0, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "currency", null: false
     t.decimal "exchange_rate", precision: 10, scale: 6, default: "1.0"
     t.decimal "original_amount", precision: 10, scale: 2, null: false
     t.uuid "original_commission_id"
     t.string "original_currency", null: false
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.uuid "transaction_record_id", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["affiliate_profile_id", "created_at"], name: "idx_on_affiliate_profile_id_created_at_f4c0ff22be"
+    t.index ["affiliate_profile_id", "status"], name: "index_affiliate_commissions_on_affiliate_profile_id_and_status"
     t.index ["affiliate_profile_id"], name: "index_affiliate_commissions_on_affiliate_profile_id"
     t.index ["affiliate_referral_id"], name: "index_affiliate_commissions_on_affiliate_referral_id"
     t.index ["commission_type"], name: "index_affiliate_commissions_on_commission_type"
@@ -203,7 +204,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
   create_table "affiliate_payout_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.jsonb "data", default: {}
+    t.jsonb "data", default: {}, null: false
     t.string "external_id"
     t.datetime "funded_at"
     t.string "name"
@@ -223,11 +224,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.string "code", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "currency", null: false
-    t.jsonb "data", default: {}
+    t.jsonb "data", default: {}, null: false
     t.string "external_id"
     t.uuid "payout_batch_id"
     t.integer "provider", default: 0, null: false
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["affiliate_profile_id"], name: "index_affiliate_payouts_on_affiliate_profile_id"
     t.index ["code"], name: "index_affiliate_payouts_on_code", unique: true
@@ -243,8 +244,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.string "currency", default: "USD", null: false
     t.integer "holding_days"
     t.decimal "max_earnings_per_account", precision: 10, scale: 2
-    t.jsonb "payment_details", default: {}
-    t.integer "payment_method_type", default: 0
+    t.jsonb "payment_details", default: {}, null: false
+    t.integer "payment_method_type", default: 0, null: false
     t.boolean "payouts_enabled", default: false, null: false
     t.string "referral_code", null: false
     t.integer "tenure_months"
@@ -260,9 +261,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.uuid "account_id", null: false
     t.uuid "affiliate_profile_id", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["account_id"], name: "index_affiliate_referrals_on_account_id", unique: true
+    t.index ["affiliate_profile_id", "created_at"], name: "idx_on_affiliate_profile_id_created_at_829d794737"
+    t.index ["affiliate_profile_id", "status"], name: "index_affiliate_referrals_on_affiliate_profile_id_and_status"
     t.index ["affiliate_profile_id"], name: "index_affiliate_referrals_on_affiliate_profile_id"
     t.index ["created_at"], name: "index_affiliate_referrals_on_created_at"
     t.index ["status"], name: "index_affiliate_referrals_on_status"
@@ -273,13 +276,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.integer "amount", null: false
     t.integer "balance", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.jsonb "data", default: {}
+    t.jsonb "data", default: {}, null: false
     t.string "description"
     t.datetime "expires_at", null: false
     t.integer "grant_type", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["ai_wallet_id", "created_at"], name: "index_ai_credit_grants_on_ai_wallet_id_and_created_at"
+    t.index ["ai_wallet_id", "expires_at"], name: "index_ai_credit_grants_on_ai_wallet_id_and_expires_at"
     t.index ["ai_wallet_id"], name: "index_ai_credit_grants_on_ai_wallet_id"
-    t.index ["expires_at"], name: "index_ai_credit_grants_on_expires_at"
   end
 
   create_table "ai_wallet_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -289,13 +293,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.integer "amount", null: false
     t.integer "balance_after", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.jsonb "data", default: {}
+    t.jsonb "data", default: {}, null: false
     t.string "description"
     t.string "model_used"
     t.integer "transaction_type", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "user_id"
+    t.index ["account_id", "created_at"], name: "index_ai_wallet_transactions_on_account_id_and_created_at"
     t.index ["account_id"], name: "index_ai_wallet_transactions_on_account_id"
+    t.index ["ai_wallet_id", "created_at"], name: "index_ai_wallet_transactions_on_ai_wallet_id_and_created_at"
     t.index ["ai_wallet_id"], name: "index_ai_wallet_transactions_on_ai_wallet_id"
     t.index ["user_id"], name: "index_ai_wallet_transactions_on_user_id"
   end
@@ -385,16 +391,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.string "brand"
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.jsonb "data", default: {}, null: false
+    t.boolean "default_method", default: false, null: false
     t.integer "expiry_month"
     t.integer "expiry_year"
     t.string "external_id"
-    t.boolean "is_default", default: false, null: false
     t.string "last_four"
     t.integer "payment_type", default: 0, null: false
     t.integer "provider", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["account_id", "is_default"], name: "index_payment_methods_on_account_id_and_is_default"
+    t.index ["account_id", "default_method"], name: "index_payment_methods_on_account_id_and_default_method"
     t.index ["account_id"], name: "index_payment_methods_on_account_id"
     t.index ["external_id"], name: "index_payment_methods_on_external_id"
   end
@@ -565,9 +571,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.uuid "subscription_id"
     t.integer "transaction_type", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_transactions_on_account_id_and_created_at"
+    t.index ["account_id", "status"], name: "index_transactions_on_account_id_and_status"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["code"], name: "index_transactions_on_code", unique: true
-    t.index ["created_at"], name: "index_transactions_on_created_at"
     t.index ["external_id"], name: "index_transactions_on_external_id"
     t.index ["original_transaction_id"], name: "index_transactions_on_original_transaction_id"
     t.index ["status"], name: "index_transactions_on_status"
@@ -639,10 +646,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.integer "transaction_type", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "wallet_id", null: false
+    t.index ["account_id", "created_at"], name: "index_wallet_transactions_on_account_id_and_created_at"
     t.index ["account_id"], name: "index_wallet_transactions_on_account_id"
     t.index ["created_at"], name: "index_wallet_transactions_on_created_at"
     t.index ["reference_type", "reference_id"], name: "index_wallet_transactions_on_reference"
     t.index ["transaction_type"], name: "index_wallet_transactions_on_transaction_type"
+    t.index ["wallet_id", "created_at"], name: "index_wallet_transactions_on_wallet_id_and_created_at"
     t.index ["wallet_id"], name: "index_wallet_transactions_on_wallet_id"
   end
 
