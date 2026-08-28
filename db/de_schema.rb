@@ -22,10 +22,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "role_id", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_access_account_user_roles_on_account_id_and_created_at"
     t.index ["account_id"], name: "index_access_account_user_roles_on_account_id"
     t.index ["account_user_id", "role_id"], name: "idx_acc_user_role_composite"
     t.index ["account_user_id"], name: "index_access_account_user_roles_on_account_user_id"
-    t.index ["created_at"], name: "index_access_account_user_roles_on_created_at"
     t.index ["role_id"], name: "index_access_account_user_roles_on_role_id"
   end
 
@@ -35,12 +35,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.string "identifier", null: false
     t.string "name", null: false
     t.jsonb "permissions", default: {}, null: false
-    t.boolean "system_provided", default: false
+    t.boolean "system_provided", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_access_roles_on_account_id_and_created_at"
     t.index ["account_id", "identifier"], name: "index_access_roles_on_account_id_and_identifier", unique: true
     t.index ["account_id", "name"], name: "index_access_roles_on_account_id_and_name"
     t.index ["account_id"], name: "index_access_roles_on_account_id"
-    t.index ["created_at"], name: "index_access_roles_on_created_at"
   end
 
   create_table "activities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -94,6 +94,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.integer "total_handoffs", default: 0, null: false
     t.integer "total_resolutions", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_ai_agents_on_account_id_and_created_at"
     t.index ["account_id", "status"], name: "index_ai_agents_on_account_id_and_status"
     t.index ["account_id"], name: "index_ai_agents_on_account_id"
     t.index ["portal_id"], name: "index_ai_agents_on_portal_id"
@@ -342,8 +343,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.string "webhook_url"
     t.index ["account_id", "created_at"], name: "index_channel_customs_on_account_id_and_created_at"
     t.index ["account_id", "identifier"], name: "index_channel_customs_on_account_id_and_identifier", unique: true
+    t.index ["account_id", "status"], name: "index_channel_customs_on_account_id_and_status"
     t.index ["account_id"], name: "index_channel_customs_on_account_id"
-    t.index ["status"], name: "index_channel_customs_on_status"
   end
 
   create_table "channel_emails", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -405,9 +406,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.string "username"
     t.index ["account_id", "created_at"], name: "index_channel_instagram_on_account_id_and_created_at"
     t.index ["account_id", "instagram_id"], name: "index_channel_instagram_on_account_id_and_instagram_id", unique: true
+    t.index ["account_id", "status"], name: "index_channel_instagram_on_account_id_and_status"
     t.index ["account_id"], name: "index_channel_instagram_on_account_id"
     t.index ["instagram_id"], name: "index_channel_instagram_on_instagram_id", unique: true
-    t.index ["status"], name: "index_channel_instagram_on_status"
   end
 
   create_table "channel_short_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1065,7 +1066,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.uuid "inbox_id", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "user_id", null: false
-    t.index ["created_at"], name: "index_inbox_users_on_created_at"
+    t.index ["inbox_id", "created_at"], name: "index_inbox_users_on_inbox_id_and_created_at"
     t.index ["inbox_id", "user_id"], name: "index_inbox_users_on_inbox_id_and_user_id", unique: true
     t.index ["inbox_id"], name: "index_inbox_users_on_inbox_id"
     t.index ["user_id"], name: "index_inbox_users_on_user_id"
@@ -1104,14 +1105,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
 
   create_table "integrations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
-    t.boolean "active", default: true
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.jsonb "credentials", default: {}, null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.string "name"
     t.integer "provider", null: false
-    t.jsonb "settings", default: {}
+    t.jsonb "settings", default: {}, null: false
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_integrations_on_account_id_and_created_at"
     t.index ["account_id", "provider"], name: "index_integrations_on_account_id_and_provider"
+    t.index ["account_id", "status"], name: "index_integrations_on_account_id_and_status"
     t.index ["account_id"], name: "index_integrations_on_account_id"
-    t.index ["created_at"], name: "index_integrations_on_created_at"
   end
 
   create_table "labels", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1143,13 +1148,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.boolean "system_provided", default: false, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.integer "visibility", default: 0, null: false
+    t.index ["account_id", "created_at"], name: "index_macros_on_account_id_and_created_at"
     t.index ["account_id", "name"], name: "index_macros_on_account_id_and_name"
     t.index ["account_id", "scopeable_type", "scopeable_id"], name: "idx_macros_scopeable"
     t.index ["account_id", "status"], name: "index_macros_on_account_id_and_status"
     t.index ["account_id", "system_provided"], name: "index_macros_on_account_id_and_system_provided"
     t.index ["account_id", "visibility"], name: "index_macros_on_account_id_and_visibility"
     t.index ["account_id"], name: "index_macros_on_account_id"
-    t.index ["created_at"], name: "index_macros_on_created_at"
     t.index ["scopeable_type", "scopeable_id"], name: "index_macros_on_scopeable"
   end
 
@@ -1227,9 +1232,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.integer "push_flags", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "user_id", null: false
+    t.index ["account_id", "created_at"], name: "index_notification_settings_on_account_id_and_created_at"
     t.index ["account_id", "user_id"], name: "index_notification_settings_on_account_id_and_user_id", unique: true
     t.index ["account_id"], name: "index_notification_settings_on_account_id"
-    t.index ["user_id", "created_at"], name: "index_notification_settings_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_notification_settings_on_user_id"
   end
 
@@ -1282,8 +1287,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.integer "skill_type", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_skills_on_account_id_and_created_at"
     t.index ["account_id", "name"], name: "index_skills_on_account_id_and_name", unique: true
     t.index ["account_id", "skill_type"], name: "index_skills_on_account_id_and_skill_type"
+    t.index ["account_id", "status"], name: "index_skills_on_account_id_and_status"
     t.index ["account_id"], name: "index_skills_on_account_id"
   end
 
@@ -1323,7 +1330,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.uuid "team_id", null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "user_id", null: false
-    t.index ["created_at"], name: "index_team_users_on_created_at"
+    t.index ["team_id", "created_at"], name: "index_team_users_on_team_id_and_created_at"
     t.index ["team_id", "user_id"], name: "index_team_users_on_team_id_and_user_id", unique: true
     t.index ["team_id"], name: "index_team_users_on_team_id"
     t.index ["user_id"], name: "index_team_users_on_user_id"
@@ -1331,7 +1338,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
 
   create_table "teams", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
-    t.boolean "auto_assign", default: true, null: false
     t.jsonb "configurations", default: {}, null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.text "description"
@@ -1362,18 +1368,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
   end
 
   create_table "webhook_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "endpoint_url", null: false
     t.string "event_name", null: false
-    t.jsonb "request_payload", default: {}
+    t.jsonb "request_payload", default: {}, null: false
     t.uuid "resource_id", null: false
     t.string "resource_type", null: false
-    t.integer "status", default: 0
+    t.integer "status", default: 0, null: false
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["created_at"], name: "index_webhook_deliveries_on_created_at"
+    t.index ["account_id", "created_at"], name: "index_webhook_deliveries_on_account_id_and_created_at"
+    t.index ["account_id", "status"], name: "index_webhook_deliveries_on_account_id_and_status"
+    t.index ["account_id"], name: "index_webhook_deliveries_on_account_id"
     t.index ["event_name"], name: "index_webhook_deliveries_on_event_name"
+    t.index ["resource_type", "resource_id", "created_at"], name: "index_webhook_deliveries_on_resource_and_created_at"
+    t.index ["resource_type", "resource_id", "status"], name: "index_webhook_deliveries_on_resource_and_status"
     t.index ["resource_type", "resource_id"], name: "index_webhook_deliveries_on_resource"
-    t.index ["status"], name: "index_webhook_deliveries_on_status"
   end
 
   create_table "webhook_delivery_attempts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1384,7 +1394,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.text "response_body"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.uuid "webhook_delivery_id", null: false
-    t.index ["created_at"], name: "index_webhook_delivery_attempts_on_created_at"
+    t.index ["webhook_delivery_id", "attempt_number"], name: "idx_on_webhook_delivery_id_attempt_number_5b1733a9ca"
+    t.index ["webhook_delivery_id", "created_at"], name: "idx_on_webhook_delivery_id_created_at_43c226d6a4"
     t.index ["webhook_delivery_id"], name: "index_webhook_delivery_attempts_on_webhook_delivery_id"
   end
 
