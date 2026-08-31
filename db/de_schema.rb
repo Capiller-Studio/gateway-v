@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -1174,6 +1174,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.index ["resource_type", "resource_id"], name: "index_mentions_on_resource"
   end
 
+  create_table "message_reactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "emoji", null: false
+    t.string "external_id"
+    t.uuid "message_id", null: false
+    t.string "reaction_name"
+    t.uuid "sender_id", null: false
+    t.string "sender_type", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_message_reactions_on_account_id_and_created_at"
+    t.index ["account_id", "message_id"], name: "index_message_reactions_on_account_id_and_message_id"
+    t.index ["account_id"], name: "index_message_reactions_on_account_id"
+    t.index ["message_id", "sender_type", "sender_id", "emoji"], name: "idx_msg_reactions_unique", unique: true
+    t.index ["message_id"], name: "index_message_reactions_on_message_id"
+    t.index ["sender_type", "sender_id"], name: "index_message_reactions_on_sender"
+  end
+
   create_table "messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
     t.jsonb "ai_metadata", default: {}, null: false
@@ -1183,12 +1201,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.uuid "conversation_id", null: false
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.jsonb "data", default: {}, null: false
+    t.datetime "deleted_at"
+    t.jsonb "edit_history", default: [], null: false
+    t.datetime "edited_at"
     t.string "external_id"
     t.string "external_reply_to_id"
     t.uuid "inbox_id", null: false
     t.string "locale"
     t.uuid "outbound_channel_id"
     t.string "outbound_channel_type"
+    t.uuid "reply_to_message_id"
     t.uuid "sender_id", null: false
     t.string "sender_type", null: false
     t.integer "source"
@@ -1200,10 +1222,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
     t.index ["ai_metadata"], name: "index_messages_on_ai_metadata", using: :gin
     t.index ["conversation_id", "content_type"], name: "index_messages_on_conversation_id_and_content_type"
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
+    t.index ["conversation_id", "deleted_at"], name: "index_messages_on_conversation_id_and_deleted_at"
     t.index ["conversation_id", "status"], name: "index_messages_on_conversation_id_and_status"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["inbox_id"], name: "index_messages_on_inbox_id"
     t.index ["outbound_channel_type", "outbound_channel_id"], name: "index_messages_on_outbound_channel"
+    t.index ["reply_to_message_id"], name: "index_messages_on_reply_to_message_id"
     t.index ["sender_type", "sender_id"], name: "index_messages_on_sender"
   end
 
@@ -1449,8 +1473,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180004) do
   add_foreign_key "inboxes", "business_hour_groups", on_delete: :nullify
   add_foreign_key "inboxes", "csat_surveys", on_delete: :nullify
   add_foreign_key "inboxes", "email_templates", column: "conversation_reply_template_id", on_delete: :nullify
+  add_foreign_key "message_reactions", "messages", on_delete: :cascade
   add_foreign_key "messages", "conversations", on_delete: :cascade
   add_foreign_key "messages", "inboxes", on_delete: :cascade
+  add_foreign_key "messages", "messages", column: "reply_to_message_id", on_delete: :nullify
   add_foreign_key "sla_inboxes", "inboxes", on_delete: :cascade
   add_foreign_key "sla_inboxes", "sla_policies", on_delete: :cascade
   add_foreign_key "sla_policies", "business_hour_groups", on_delete: :nullify
