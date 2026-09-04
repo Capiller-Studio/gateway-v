@@ -484,17 +484,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_160000) do
     t.jsonb "data", default: {}, null: false
     t.integer "flags", default: 0, null: false
     t.string "full_phone_number"
+    t.jsonb "message_templates", default: [], null: false
     t.string "name"
     t.string "phone_code"
     t.string "phone_number"
     t.string "phone_number_id", null: false
     t.integer "service", default: 0, null: false
     t.integer "status", default: 0, null: false
+    t.datetime "templates_synced_at"
     t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "webhook_secret"
     t.index ["account_id", "created_at"], name: "index_channel_whatsapps_on_account_id_and_created_at"
     t.index ["account_id", "name"], name: "index_channel_whatsapps_on_account_id_and_name"
     t.index ["account_id"], name: "index_channel_whatsapps_on_account_id"
+    t.index ["business_account_id"], name: "index_channel_whatsapps_on_business_account_id"
     t.index ["full_phone_number"], name: "index_channel_whatsapps_on_full_phone_number", unique: true
     t.index ["phone_number_id"], name: "index_channel_whatsapps_on_phone_number_id", unique: true
     t.index ["service"], name: "index_channel_whatsapps_on_service"
@@ -1223,6 +1226,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_160000) do
     t.index ["conversation_id", "content_type"], name: "index_messages_on_conversation_id_and_content_type"
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
     t.index ["conversation_id", "deleted_at"], name: "index_messages_on_conversation_id_and_deleted_at"
+    t.index ["conversation_id", "sender_type", "created_at"], name: "index_messages_on_conv_and_sender_and_created_at"
     t.index ["conversation_id", "status"], name: "index_messages_on_conversation_id_and_status"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["inbox_id"], name: "index_messages_on_inbox_id"
