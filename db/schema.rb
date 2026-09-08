@@ -89,12 +89,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.string "currency", limit: 4, default: "USD", null: false
     t.jsonb "data", default: {}, null: false
     t.string "email"
-    t.string "identifier", null: false
+    t.string "identifier"
     t.jsonb "limits", default: {}, null: false
     t.string "locale", default: "en", null: false
     t.string "name", null: false
     t.datetime "referral_approved_at"
-    t.string "referral_code", null: false
+    t.string "referral_code"
     t.decimal "referral_commission", precision: 10, scale: 2
     t.integer "referral_commission_type", default: 0, null: false
     t.datetime "referral_paid_at"
@@ -595,7 +595,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.jsonb "data", default: {}, null: false
     t.string "display_name"
     t.date "dob"
-    t.string "email", null: false
+    t.string "email"
     t.string "encrypted_password", default: "", null: false
     t.integer "failed_attempts", default: 0, null: false
     t.string "first_name"
