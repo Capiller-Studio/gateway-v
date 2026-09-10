@@ -58,6 +58,15 @@ RSpec.describe 'V1::Resources::Inboxes', type: :request do
       end
     end
 
+    context 'when attempting cross-tenant access with an unauthorized X-Account-Id' do
+      let!(:other_account) { create(:account) }
+
+      it 'blocks access to foreign tenant resources' do
+        get '/v1/inboxes', headers: auth_headers(user, account: other_account)
+        expect(response.status).to be_in([401, 402, 403, 404])
+      end
+    end
+
     context 'when user lacks permission' do
       let!(:agent_user) { create(:user, confirmed_at: Time.current) }
       let!(:agent_account_user) { create(:account_user, account: account, user: agent_user, owner: false) }
