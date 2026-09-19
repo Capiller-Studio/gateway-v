@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_14_120005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -314,6 +314,110 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.index ["account_id"], name: "index_ai_wallets_on_account_id_unique", unique: true
   end
 
+  create_table "auth_audit_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id"
+    t.integer "auth_method", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "email"
+    t.string "error_code"
+    t.string "error_message"
+    t.integer "event_type", null: false
+    t.string "ip_address"
+    t.jsonb "metadata", default: {}, null: false
+    t.integer "status", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "user_agent"
+    t.uuid "user_id"
+    t.index ["account_id", "created_at"], name: "index_auth_audit_logs_on_account_and_created"
+    t.index ["account_id"], name: "index_auth_audit_logs_on_account_id"
+    t.index ["created_at"], name: "index_auth_audit_logs_on_created_at"
+    t.index ["email"], name: "index_auth_audit_logs_on_email"
+    t.index ["event_type"], name: "index_auth_audit_logs_on_event_type"
+    t.index ["status"], name: "index_auth_audit_logs_on_status"
+    t.index ["user_id", "created_at"], name: "index_auth_audit_logs_on_user_and_created"
+    t.index ["user_id"], name: "index_auth_audit_logs_on_user_id"
+  end
+
+  create_table "auth_domain_verifications", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.integer "check_count", default: 0, null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "domain", null: false
+    t.string "failure_reason"
+    t.datetime "last_checked_at"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.string "verification_token", null: false
+    t.datetime "verified_at"
+    t.index ["account_id", "created_at"], name: "index_auth_domain_verifications_on_account_and_created"
+    t.index ["account_id"], name: "index_auth_domain_verifications_on_account_id"
+    t.index ["domain"], name: "index_auth_domain_verifications_on_domain", unique: true
+    t.index ["status"], name: "index_auth_domain_verifications_on_status"
+  end
+
+  create_table "auth_scim_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "expires_at"
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.string "token_digest", null: false
+    t.string "token_last_four"
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id", "created_at"], name: "index_auth_scim_tokens_on_account_and_created"
+    t.index ["account_id"], name: "index_auth_scim_tokens_on_account_id"
+    t.index ["token_digest"], name: "index_auth_scim_tokens_on_token_digest", unique: true
+  end
+
+  create_table "auth_sso_configurations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.boolean "allow_owner_password_fallback", default: true, null: false
+    t.jsonb "allowed_email_domains", default: [], null: false
+    t.jsonb "attribute_mapping", default: {}, null: false
+    t.datetime "certificate_expires_at"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.uuid "default_role_id"
+    t.boolean "enforce_sso", default: false, null: false
+    t.text "idp_certificates", default: [], array: true
+    t.string "idp_entity_id"
+    t.string "idp_metadata_url"
+    t.string "idp_slo_url"
+    t.string "idp_sso_url"
+    t.boolean "jit_provisioning_enabled", default: true, null: false
+    t.string "oidc_client_id"
+    t.string "oidc_client_secret"
+    t.string "oidc_issuer"
+    t.integer "protocol", default: 0, null: false
+    t.integer "provider_type", default: 0, null: false
+    t.integer "session_timeout_seconds"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["account_id"], name: "index_auth_sso_configurations_on_account_id", unique: true
+    t.index ["allowed_email_domains"], name: "index_auth_sso_configurations_on_allowed_email_domains", using: :gin
+    t.index ["default_role_id"], name: "index_auth_sso_configurations_on_default_role_id"
+    t.index ["protocol"], name: "index_auth_sso_configurations_on_protocol"
+    t.index ["status"], name: "index_auth_sso_configurations_on_status"
+  end
+
+  create_table "auth_user_identities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id"
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.jsonb "credentials", default: {}, null: false
+    t.string "email"
+    t.jsonb "extra_attributes", default: {}, null: false
+    t.datetime "last_used_at"
+    t.integer "provider", null: false
+    t.string "uid", null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.uuid "user_id", null: false
+    t.index ["account_id", "provider"], name: "index_auth_user_identities_on_account_and_provider"
+    t.index ["account_id"], name: "index_auth_user_identities_on_account_id"
+    t.index ["email"], name: "index_auth_user_identities_on_email"
+    t.index ["provider", "uid"], name: "index_auth_user_identities_on_provider_and_uid", unique: true
+    t.index ["user_id", "provider"], name: "index_auth_user_identities_on_user_and_provider"
+    t.index ["user_id"], name: "index_auth_user_identities_on_user_id"
+  end
+
   create_table "countries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.string "iso", null: false
@@ -607,8 +711,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.datetime "locked_at"
     t.string "middle_name"
     t.string "name", default: ""
-    t.string "provider"
-    t.string "provider_uid"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
@@ -627,7 +729,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["locale"], name: "index_users_on_locale"
     t.index ["name"], name: "index_users_on_name"
-    t.index ["provider", "provider_uid"], name: "index_users_on_provider_and_provider_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["status"], name: "index_users_on_status"
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
@@ -704,6 +805,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_180002) do
   add_foreign_key "ai_credit_grants", "ai_wallets"
   add_foreign_key "ai_wallet_transactions", "ai_wallets"
   add_foreign_key "ai_wallets", "accounts"
+  add_foreign_key "auth_audit_logs", "accounts"
+  add_foreign_key "auth_audit_logs", "users"
+  add_foreign_key "auth_domain_verifications", "accounts"
+  add_foreign_key "auth_scim_tokens", "accounts"
+  add_foreign_key "auth_sso_configurations", "accounts"
+  add_foreign_key "auth_user_identities", "accounts"
+  add_foreign_key "auth_user_identities", "users"
   add_foreign_key "country_translations", "countries", on_delete: :cascade
   add_foreign_key "domains", "accounts", on_delete: :cascade
   add_foreign_key "global_routings", "accounts", on_delete: :cascade
