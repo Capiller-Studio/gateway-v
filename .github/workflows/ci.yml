@@ -13,6 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Checkout core engine
+        uses: actions/checkout@v4
+        with:
+          repository: deskbolic/core
+          token: ${{ secrets.CORE_REPO_TOKEN }}
+          path: vendor/core
+
+      - name: Link core engine
+        run: ln -s ${{ github.workspace }}/vendor/core ../core
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -32,6 +42,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Checkout core engine
+        uses: actions/checkout@v4
+        with:
+          repository: deskbolic/core
+          token: ${{ secrets.CORE_REPO_TOKEN }}
+          path: vendor/core
+
+      - name: Link core engine
+        run: ln -s ${{ github.workspace }}/vendor/core ../core
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -87,6 +107,16 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Checkout core engine
+        uses: actions/checkout@v4
+        with:
+          repository: deskbolic/core
+          token: ${{ secrets.CORE_REPO_TOKEN }}
+          path: vendor/core
+
+      - name: Link core engine
+        run: ln -s ${{ github.workspace }}/vendor/core ../core
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
