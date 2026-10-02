@@ -283,6 +283,7 @@ GEM
       websocket-driver (>= 0.8.0)
     ffaker (2.25.0)
     ffi (1.17.4-arm64-darwin)
+    ffi (1.17.4-x86_64-linux-gnu)
     ffi-compiler (1.4.2)
       ffi (>= 1.15.5)
       rake
@@ -290,6 +291,9 @@ GEM
     globalid (1.4.0)
       activesupport (>= 6.1)
     google-protobuf (4.34.1-arm64-darwin)
+      bigdecimal
+      rake (~> 13.3)
+    google-protobuf (4.34.1-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
     googleapis-common-protos-types (1.22.0)
@@ -304,6 +308,9 @@ GEM
     groupdate (6.8.0)
       activesupport (>= 7.2)
     grpc (1.80.0-arm64-darwin)
+      google-protobuf (>= 3.25, < 5.0)
+      googleapis-common-protos-types (~> 1.0)
+    grpc (1.80.0-x86_64-linux-gnu)
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
     has-guarded-handlers (1.6.3)
@@ -385,6 +392,7 @@ GEM
       bigdecimal
       i18n (~> 1.9)
     mrml (1.10.0-arm64-darwin)
+    mrml (1.10.0-x86_64-linux)
     msgpack (1.8.0)
     multi_json (1.21.1)
     multi_xml (0.9.1)
@@ -406,6 +414,8 @@ GEM
       net-protocol
     nio4r (2.7.5)
     nokogiri (1.19.4-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.19.4-x86_64-linux-gnu)
       racc (~> 1.4)
     oauth2 (2.0.18)
       faraday (>= 0.17.3, < 4.0)
@@ -447,6 +457,7 @@ GEM
       racc
     pdf-core (0.10.0)
     pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     pp (0.6.4)
       prettyprint
     prawn (2.5.0)
@@ -657,6 +668,7 @@ GEM
 
 PLATFORMS
   arm64-darwin
+  x86_64-linux
 
 DEPENDENCIES
   annotate
@@ -768,14 +780,17 @@ CHECKSUMS
   faye-websocket (0.12.0) sha256=ad9f7dfcd0306d0a13baeee450729657661129af15bb5f38716c242484ab42e1
   ffaker (2.25.0) sha256=e485c5adf8195aac55662875b7f515469bca46d77b60d0e7d08db6861bcbec40
   ffi (1.17.4-arm64-darwin) sha256=19071aaf1419251b0a46852abf960e77330a3b334d13a4ab51d58b31a937001b
+  ffi (1.17.4-x86_64-linux-gnu) sha256=9d3db14c2eae074b382fa9c083fe95aec6e0a1451da249eab096c34002bc752d
   ffi-compiler (1.4.2) sha256=a9d69d5d9ced6f64776ddafa535867ad90e5740ad37bed7afb4de6e450da126e
   flag_shih_tzu (0.3.23) sha256=0982215a5b96771671e13884e08f34c7084650752fd002a3ad6e91c4897061be
   globalid (1.4.0) sha256=037f12fbf1d9d7a014d501c2d5c77356fd4ddd96d7a7991d6700bba96706f427
   google-protobuf (4.34.1-arm64-darwin) sha256=2745061f973119e6e7f3c81a0c77025d291a3caa6585a2cd24a25bbc7bedb267
+  google-protobuf (4.34.1-x86_64-linux-gnu) sha256=87088c9fd8e47b5b40ca498fc1195add6149e941ff7e81c532a5b0b8876d4cc9
   googleapis-common-protos-types (1.22.0) sha256=f97492b77bd6da0018c860d5004f512fe7cd165554d7019a8f4df6a56fbfc4c7
   grape (3.2.1) sha256=448072f55904e5a4dca2e3781f0a373942514be65402cafb6177f5bc73db1b94
   groupdate (6.8.0) sha256=16f90ea18ca981c38e41e592416480b28353aa5e5cc3e7cb13a68b8fb5d40510
   grpc (1.80.0-arm64-darwin) sha256=c4b5871ad7673c526b64e54e70a99d84e35e2c26a1fc9a91f9c3341c7821e0c7
+  grpc (1.80.0-x86_64-linux-gnu) sha256=25ba8beb5438152fb60656161dc729c1258c6963ec568361f601e19b2fb7ac23
   has-guarded-handlers (1.6.3) sha256=5c63a764e07dcd54b35f9d23a6c155041f426384669e2a80e27e9558e53415ca
   hashie (5.1.0) sha256=c266471896f323c446ea8207f8ffac985d2718df0a0ba98651a3057096ca3870
   hkdf (1.0.0) sha256=0f6737c93c2ccb62d733d277be42631cfed3c183ca8f3538165b326addf6e30d
@@ -809,6 +824,7 @@ CHECKSUMS
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
   money (7.0.2) sha256=615c27c1fd1d190dceda5c5f4dd5af5f4d20f790ff3b62ea2fe2d96eb22e2c60
   mrml (1.10.0-arm64-darwin) sha256=ee97b8db7df01275fa5449fb9278db0bf89f70d04b1855df20c2834035cab945
+  mrml (1.10.0-x86_64-linux) sha256=4c4740121fd25440019ee72e48f021c35b5176e1011b86543bed5ba5f6951a4b
   msgpack (1.8.0) sha256=e64ce0212000d016809f5048b48eb3a65ffb169db22238fb4b72472fecb2d732
   multi_json (1.21.1) sha256=e6126a31808e3b4d19f483c775ceac34df190dffa62adfb63a165ee14ba68080
   multi_xml (0.9.1) sha256=7ce766b59c17241ed62976caeae1fae9b2431b263398c35396239a68c4a64e57
@@ -822,6 +838,7 @@ CHECKSUMS
   net-smtp (0.5.1) sha256=ed96a0af63c524fceb4b29b0d352195c30d82dd916a42f03c62a3a70e5b70736
   nio4r (2.7.5) sha256=6c90168e48fb5f8e768419c93abb94ba2b892a1d0602cb06eef16d8b7df1dca1
   nokogiri (1.19.4-arm64-darwin) sha256=a46db9853286e6597b36ebc6953817d15acf3a299583eb3f89fdc6f91dd63527
+  nokogiri (1.19.4-x86_64-linux-gnu) sha256=379fae440b28915e3f19d752ce2dcf8465ed2b2fbefd2a7ca0dd497bc981a06a
   oauth2 (2.0.18) sha256=bacf11e470dfb963f17348666d0a75c7b29ca65bc48fd47be9057cf91a403287
   oj (3.17.0) sha256=5684b2127fb70e650fae90df521b91336ff8e55e2e1011ed80eb0283beac5360
   omniauth (2.1.4) sha256=42a05b0496f0d22e1dd85d42aaf602f064e36bb47a6826a27ab55e5ba608763c
@@ -837,6 +854,7 @@ CHECKSUMS
   parser (3.3.11.1) sha256=d17ace7aabe3e72c3cc94043714be27cc6f852f104d81aa284c2281aecc65d54
   pdf-core (0.10.0) sha256=0a5d101e2063c01e3f941e1ee47cbb97f1adfc1395b58372f4f65f1300f3ce91
   pg (1.6.3-arm64-darwin) sha256=7240330b572e6355d7c75a7de535edb5dfcbd6295d9c7777df4d9dddfb8c0e5f
+  pg (1.6.3-x86_64-linux) sha256=5d9e188c8f7a0295d162b7b88a768d8452a899977d44f3274d1946d67920ae8d
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
   prawn (2.5.0) sha256=f4e20e3b4f30bf5b9ae37dad15eb421831594553aa930b2391b0fa0a99c43cb6
   prawn-table (0.2.2) sha256=336d46e39e003f77bf973337a958af6a68300b941c85cb22288872dc2b36addb
