@@ -11,6 +11,20 @@ module V1
       association :assignee, blueprint: UserEntity
       association :team, blueprint: TeamEntity
       association :labels, blueprint: LabelEntity
+
+      association :customer, blueprint: CustomerEntity do |conversation|
+        conversation.customers.first
+      end
+
+      association :last_message, blueprint: MessageEntity
+
+      field :custom_attributes do |conversation|
+        conversation.data || {}
+      end
+
+      field :unread_count do |_conversation, _options|
+        0
+      end
     end
   end
 end

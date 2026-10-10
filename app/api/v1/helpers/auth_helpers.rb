@@ -4,7 +4,7 @@ module V1
   module Helpers
     module AuthHelpers
       def authenticate_user!
-        error!({ errors: [{ code: "unauthorized", message: I18n.t("gateway.errors.unauthorized", default: "Authentication required") }] }, 401) unless current_user
+        error!({ success: false, errors: [{ code: "unauthorized", message: I18n.t("gateway.errors.unauthorized", default: "Authentication required") }] }, 401) unless current_user && current_account
       end
 
       def authenticate_mobile_app!
@@ -15,7 +15,7 @@ module V1
         provided_secret = headers['X-Mobile-App-Secret']
         
         unless provided_secret.present? && ActiveSupport::SecurityUtils.secure_compare(expected_secret.to_s, provided_secret)
-          error!({ errors: [{ code: "forbidden", message: I18n.t("gateway.errors.mobile_app_restricted", default: "Registration is restricted to the internal mobile app.") }] }, 403)
+          error!({ success: false, errors: [{ code: "forbidden", message: I18n.t("gateway.errors.mobile_app_restricted", default: "Registration is restricted to the internal mobile app.") }] }, 403)
         end
       end
 
@@ -23,13 +23,13 @@ module V1
         return if auth_type == :jwt
 
         unless current_account&.feature_enabled?("channels.api") || current_account&.feature_enabled?("api_access")
-          error!({ errors: [{ code: "forbidden", message: I18n.t("gateway.errors.feature_disabled", default: "API Channel feature is not enabled for your account.") }] }, 403)
+          error!({ success: false, errors: [{ code: "forbidden", message: I18n.t("gateway.errors.feature_disabled", default: "API Channel feature is not enabled for your account.") }] }, 403)
         end
       end
 
       def check_subscription!
         unless current_account&.subscribed?
-          error!({ errors: [{ code: "payment_required", message: I18n.t("gateway.errors.subscription_inactive", default: "Your account subscription is inactive or limit reached. Payment is required.") }] }, 402)
+          error!({ success: false, errors: [{ code: "payment_required", message: I18n.t("gateway.errors.subscription_inactive", default: "Your account subscription is inactive or limit reached. Payment is required.") }] }, 402)
         end
       end
 
@@ -70,7 +70,7 @@ module V1
           if payload && (user = User.find_by(id: payload[:user_id]))
             @current_user = user
             @auth_type = :jwt
-            account_id = headers['X-Account-Id']
+            account_id = headers['X-Account-Id'].presence || payload[:account_id].presence
             @current_account = if account_id
               user.accounts.find_by(id: account_id)
             else

@@ -10,6 +10,7 @@ module V1
 
         unless current_account_user&.can?(permission, resource: resource)
           error!({
+            success: false,
             errors: [{
               code: "forbidden",
               message: I18n.t("gateway.errors.forbidden", default: "You do not have permission to perform this action"),

@@ -116,6 +116,19 @@ RSpec.describe 'V1::Resources::Messages', type: :request do
         expect(json_response['data']['private']).to be true
         expect(json_response['data']['visibility']).to eq('personal')
       end
+
+      it 'creates a message using response param alias and resolves conversation' do
+        expect(conversation.assignee_id).to be_nil
+
+        post "/v1/conversations/#{conversation.id}/messages",
+             params: { response: 'Resolved issue for customer', resolve_conversation: true },
+             headers: auth_headers(user, account: account)
+
+        expect(response).to have_http_status(:created)
+        expect(json_response['data']['content']).to eq('Resolved issue for customer')
+        expect(conversation.reload.assignee_id).to eq(user.id)
+        expect(conversation.status).to eq('resolved')
+      end
     end
 
     context 'with blank content' do

@@ -44,7 +44,59 @@ module V1
             )
           end
 
-          success(data: V1::Entities::LabelEntity.render_as_hash(label))
+          status 201
+          success(
+            data: V1::Entities::LabelEntity.render_as_hash(label),
+            message: 'Label created successfully'
+          )
+        end
+
+        route_param :id do
+          desc 'Get a single label by ID'
+          get do
+            authorize!(:read, Label)
+            label = current_account.with_shard do
+              current_account.labels.find(params[:id])
+            end
+
+            success(data: V1::Entities::LabelEntity.render_as_hash(label))
+          end
+
+          desc 'Update a label'
+          params do
+            optional :title, type: String, allow_blank: false
+            optional :color, type: String
+            optional :description, type: String
+          end
+          patch do
+            authorize!(:write, Label)
+            label = current_account.with_shard do
+              l = current_account.labels.find(params[:id])
+              update_attrs = {}
+              update_attrs[:title] = params[:title] if params[:title].present?
+              update_attrs[:color] = params[:color] if params[:color].present?
+              update_attrs[:description] = params[:description] if params.key?(:description)
+
+              l.update!(update_attrs) if update_attrs.any?
+              l
+            end
+
+            success(
+              data: V1::Entities::LabelEntity.render_as_hash(label),
+              message: 'Label updated successfully'
+            )
+          end
+
+          desc 'Delete a label'
+          delete do
+            authorize!(:write, Label)
+            current_account.with_shard do
+              l = current_account.labels.find(params[:id])
+              l.destroy!
+            end
+
+            success(message: 'Label deleted successfully')
+          end
         end
       end
     end

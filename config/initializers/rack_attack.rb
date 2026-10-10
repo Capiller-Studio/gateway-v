@@ -41,6 +41,7 @@ class Rack::Attack
         'Retry-After' => retry_after.to_s
       },
       [{
+        success: false,
         errors: [{
           code: "rate_limit_exceeded",
           message: "Too many requests. Please retry after #{retry_after} seconds."

@@ -148,4 +148,65 @@ RSpec.describe 'V1::Resources::Customers', type: :request do
       expect(customer1.data['vip_tier']).to eq('Platinum')
     end
   end
+
+  describe 'DELETE /v1/customers/:id' do
+    it 'deletes a customer' do
+      delete "/v1/customers/#{customer1.id}", headers: auth_headers(user, account: account)
+
+      expect(response).to have_http_status(:ok)
+      expect(json_response['success']).to be true
+      expect(account.with_shard { Customer.find_by(id: customer1.id) }).to be_nil
+    end
+  end
+
+  describe 'GET /v1/customers/:id/conversations' do
+    let!(:inbox) { account.with_shard { create(:inbox, account: account) } }
+    let!(:conv) do
+      account.with_shard do
+        c = create(:conversation, account: account, inbox: inbox)
+        c.conversation_members.create!(member: customer1, account: account)
+        c
+      end
+    end
+
+    it 'returns customer conversation history' do
+      get "/v1/customers/#{customer1.id}/conversations", headers: auth_headers(user, account: account)
+
+      expect(response).to have_http_status(:ok)
+      expect(json_response['success']).to be true
+      expect(json_response['data'].size).to be >= 1
+      expect(json_response['data'].first['id']).to eq(conv.id)
+    end
+  end
+
+  describe 'Customer Notes Subresource' do
+    it 'creates an internal note for the customer' do
+      post "/v1/customers/#{customer1.id}/notes",
+           params: { content: 'Customer requested follow-up next Tuesday.' },
+           headers: auth_headers(user, account: account)
+
+      expect(response).to have_http_status(:ok).or have_http_status(:created)
+      expect(json_response['success']).to be true
+      expect(json_response['data']['content']).to eq('Customer requested follow-up next Tuesday.')
+      expect(json_response['data']['user_id']).to eq(user.id)
+    end
+
+    it 'lists customer internal notes' do
+      account.with_shard do
+        customer1.notes.create!(
+          account: account,
+          user: user,
+          content: 'Initial customer note',
+          visibility: :personal
+        )
+      end
+
+      get "/v1/customers/#{customer1.id}/notes", headers: auth_headers(user, account: account)
+
+      expect(response).to have_http_status(:ok)
+      expect(json_response['success']).to be true
+      expect(json_response['data'].size).to eq(1)
+      expect(json_response['data'].first['content']).to eq('Initial customer note')
+    end
+  end
 end
