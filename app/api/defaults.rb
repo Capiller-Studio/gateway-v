@@ -40,17 +40,17 @@ module Defaults
     end
 
     rescue_from ActiveRecord::RecordNotFound do |_e|
-      error!({ errors: [{ code: "not_found", message: I18n.t("gateway.errors.not_found", default: "Resource not found") }] }, 404)
+      error!({ success: false, errors: [{ code: "not_found", message: I18n.t("gateway.errors.not_found", default: "Resource not found") }] }, 404)
     end
 
     rescue_from ActiveRecord::RecordInvalid do |e|
-      errors = e.record.errors.map { |err| { field: err.attribute.to_s, message: err.full_message } }
-      error!({ errors: errors }, 422)
+      errors = e.record.errors.map { |err| { code: "record_invalid", field: err.attribute.to_s, message: err.full_message } }
+      error!({ success: false, errors: errors }, 422)
     end
 
     rescue_from Grape::Exceptions::ValidationErrors do |e|
-      errors = e.errors.map { |attrs, msgs| { field: attrs.first.to_s, message: msgs.first } }
-      error!({ errors: errors }, 422)
+      errors = e.errors.map { |attrs, msgs| { code: "validation_error", field: attrs.first.to_s, message: msgs.first } }
+      error!({ success: false, errors: errors }, 422)
     end
 
     rescue_from :all do |e|
@@ -58,7 +58,7 @@ module Defaults
         raise e
       else
         Rails.logger.error "Unhandled error: #{e.class} — #{e.message}\n#{e.backtrace&.first(15)&.join("\n")}"
-        error!({ errors: [{ code: "internal_error", message: I18n.t("gateway.errors.internal_error", default: "Internal server error") }] }, 500)
+        error!({ success: false, errors: [{ code: "internal_error", message: I18n.t("gateway.errors.internal_error", default: "Internal server error") }] }, 500)
       end
     end
   end

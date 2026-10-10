@@ -17,6 +17,8 @@ module Gateway
     config.load_defaults 8.0
 
     config.api_only = true
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore
     config.middleware.use Rack::Attack
 
     # Autoload Grape API handled by Zeitwerk by default in Rails 7+

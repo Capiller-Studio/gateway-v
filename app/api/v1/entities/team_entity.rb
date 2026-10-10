@@ -10,6 +10,10 @@ module V1
       field :member_count do |team|
         team.team_users.count
       end
+
+      field :member_ids do |team|
+        team.team_users.pluck(:user_id).map(&:to_s)
+      end
     end
   end
 end
