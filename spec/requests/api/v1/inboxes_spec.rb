@@ -23,6 +23,18 @@ RSpec.describe 'V1::Resources::Inboxes', type: :request do
         names = json_response['data'].map { |i| i['name'] }
         expect(names).to include('Support Inbox', 'Sales Inbox')
       end
+
+      it 'filters inboxes by mobile_widget channel_type' do
+        mobile_channel = account.with_shard { create(:channel_mobile_widget, account: account, name: 'Mobile App Channel') }
+        mobile_inbox = account.with_shard { create(:inbox, account: account, channel: mobile_channel, name: 'Mobile App Inbox') }
+
+        get '/v1/inboxes', params: { channel_type: 'mobile_widget' }, headers: auth_headers(user, account: account)
+
+        expect(response).to have_http_status(:ok)
+        expect(json_response['data'].size).to eq(1)
+        expect(json_response['data'].first['name']).to eq('Mobile App Inbox')
+        expect(json_response['data'].first['channel_type']).to eq('Channel::MobileWidget')
+      end
     end
 
     context 'when API channel feature is disabled for API key requests' do

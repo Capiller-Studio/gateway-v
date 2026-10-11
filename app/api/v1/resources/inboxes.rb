@@ -12,7 +12,7 @@ module V1
 
         desc 'Get a list of inboxes for the current account'
         params do
-          optional :channel_type, type: String, values: %w[email web_widget contact_form facebook instagram whatsapp custom], desc: 'Filter by channel type'
+          optional :channel_type, type: String, values: %w[email web_widget mobile_widget contact_form facebook instagram whatsapp custom], desc: 'Filter by channel type'
           optional :page, type: Integer, default: 1, values: ->(v) { v.positive? }
           optional :per_page, type: Integer, default: 50, values: 1..100
         end
@@ -24,6 +24,7 @@ module V1
               channel_map = {
                 'email' => 'Channel::Email',
                 'web_widget' => 'Channel::WebWidget',
+                'mobile_widget' => 'Channel::MobileWidget',
                 'contact_form' => 'Channel::ContactForm',
                 'facebook' => 'Channel::FacebookPage',
                 'instagram' => 'Channel::Instagram',
