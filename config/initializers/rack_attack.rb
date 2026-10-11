@@ -29,6 +29,16 @@ class Rack::Attack
     end
   end
 
+  # Mobile SDK client requests — 300 requests per minute per IP
+  throttle('sdk/ip', limit: 300, period: 1.minute) do |req|
+    req.ip if req.path.start_with?('/v1/sdk')
+  end
+
+  # SDK message creation burst protection — 60 messages per minute per IP
+  throttle('sdk/messages/create', limit: 60, period: 1.minute) do |req|
+    req.ip if req.post? && req.path.match?(%r{^/v1/sdk/conversations/[^/]+/messages})
+  end
+
   ### Responses ###
 
   self.throttled_responder = lambda do |env|

@@ -26,6 +26,8 @@ module V1
     mount V1::Resources::Macros
     mount V1::Resources::Webhooks
     # mount V1::Resources::ApiKeys
+
+    mount V1::Sdk::Root
   end
 end
 
