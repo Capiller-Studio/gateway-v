@@ -136,7 +136,7 @@ module V1
             {
               id: msg.id,
               content: msg.content.to_s.truncate(120),
-              sender_name: msg.sender.try(:name) || msg.sender.try(:display_name),
+              sender_name: msg.sender&.name || msg.sender&.display_name,
               sender_type: msg.sender_type,
               conversation_id: msg.conversation_id,
               created_at: msg.created_at

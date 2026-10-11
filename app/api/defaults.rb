@@ -39,6 +39,10 @@ module Defaults
       I18n.locale = detect_locale
     end
 
+    after do
+      I18n.locale = I18n.default_locale
+    end
+
     rescue_from ActiveRecord::RecordNotFound do |_e|
       error!({ success: false, errors: [{ code: "not_found", message: I18n.t("gateway.errors.not_found", default: "Resource not found") }] }, 404)
     end

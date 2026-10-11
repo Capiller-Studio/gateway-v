@@ -45,7 +45,7 @@ module V1
           authorize!(:invite, AccountUser)
 
           # Check seat limit
-          if current_account.respond_to?(:users_limit_reached?) && current_account.users_limit_reached?
+          if current_account.limit_reached?(:users)
             error!({
               success: false,
               errors: [{ code: 'limit_exceeded', field: 'base', message: 'Agent seat limit reached for your plan' }]

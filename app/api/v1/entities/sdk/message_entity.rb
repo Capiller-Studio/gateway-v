@@ -13,7 +13,7 @@ module V1
         end
 
         field :client_message_id do |message|
-          message.data["client_message_id"] rescue nil
+          message.data&.dig("client_message_id")
         end
 
         association :sender, blueprint: SenderEntity

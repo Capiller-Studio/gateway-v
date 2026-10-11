@@ -13,6 +13,8 @@ module V1
         mount V1::Resources::Sdk::Devices
         mount V1::Resources::Sdk::DirectUploads
         mount V1::Resources::Sdk::Unread
+        mount V1::Resources::Sdk::Forms
+        mount V1::Resources::Sdk::HelpCenter
       end
     end
   end
