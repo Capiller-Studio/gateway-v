@@ -30,10 +30,8 @@ module V1
         end
 
         field :avatar_url do |sender|
-          if sender.respond_to?(:avatar) && sender.avatar.attached?
-            Rails.application.routes.url_helpers.rails_blob_url(sender.avatar, only_path: false) rescue nil
-          else
-            nil
+          if (sender.is_a?(User) || sender.is_a?(Customer)) && sender.avatar.attached?
+            Rails.application.routes.url_helpers.rails_blob_url(sender.avatar, only_path: false)
           end
         end
       end

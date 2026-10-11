@@ -143,7 +143,7 @@ module V1
               if params[:device_token].present?
                 current_inbox.customer_devices.where(push_token: params[:device_token]).destroy_all
               end
-              current_customer_inbox.regenerate_connection_token if current_customer_inbox.respond_to?(:regenerate_connection_token)
+              current_customer_inbox.regenerate_connection_token
             end
 
             success(message: 'Session closed successfully')

@@ -36,6 +36,23 @@ module V1
         @current_account.with_shard(&block)
       end
 
+      def effective_sdk_locale(fallback: nil)
+        if params[:locale].present? || headers['X-Locale'].present? || env['HTTP_X_LOCALE'].present? || env['HTTP_ACCEPT_LANGUAGE'].present?
+          detect_locale
+        elsif fallback.present?
+          fallback.to_sym
+        elsif current_channel.default_locale.present?
+          current_channel.default_locale.to_sym
+        else
+          I18n.default_locale
+        end
+      end
+
+      def with_sdk_locale(fallback: nil, &block)
+        locale = effective_sdk_locale(fallback: fallback)
+        I18n.with_locale(locale, &block)
+      end
+
       def current_account
         @current_account
       end

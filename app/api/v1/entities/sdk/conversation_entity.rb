@@ -12,7 +12,7 @@ module V1
           customer = options[:customer]
           if customer && conversation.account
             counts = UnreadCounts::Current.call(member: customer, account_id: conversation.account_id)
-            counts.dig(:conversations, conversation.id.to_s).to_i rescue 0
+            counts&.dig(:conversations, conversation.id.to_s).to_i
           else
             0
           end
