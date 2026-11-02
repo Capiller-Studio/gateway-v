@@ -1,0 +1,13 @@
+# core/config/sidekiq.yml
+
+:concurrency: 20
+:pidfile: tmp/pids/sidekiq.pid
+:logfile: log/sidekiq.log
+:queues:
+  - [default, 5]
+  - [mailers, 3]
+  - [automations, 2]
+  - [searchkick, 2]
+  - [logs, 1]
+  - [maintenance, 1]
+  - [low, 1]

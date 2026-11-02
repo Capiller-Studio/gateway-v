@@ -41,7 +41,7 @@ end
 # ============================================================================
 # Shared Backend (Core)
 # ============================================================================
-if ENV["CORE_PATH"].present?
+if ENV["CORE_PATH"] && !ENV["CORE_PATH"].empty?
   gem "core", path: ENV["CORE_PATH"]
 elsif File.directory?(File.expand_path("../core", __dir__))
   gem "core", path: "../core"
