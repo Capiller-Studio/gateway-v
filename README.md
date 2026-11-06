@@ -1,6 +1,6 @@
-# Deskbolic Gateway
+# Capiller Rely Gateway
 
-The high-performance, enterprise-grade API gateway for the Deskbolic platform. Built with **Rails 8 (API-only mode)** and **Grape**.
+The high-performance, enterprise-grade API gateway for Capiller Rely. Built with **Rails 8 (API-only mode)** and **Grape**.
 
 ## Architecture & Performance
 - **Grape API**: Provides a robust, DSL-based routing layer that is faster and more lightweight than standard Rails controllers.
@@ -42,7 +42,7 @@ The Gateway supports dual authentication strategies:
    ```
 
 2. **Database**:
-   Shared with other Deskbolic projects. Ensure `core` migrations are up to date.
+   Shared with the other Capiller Rely apps. Ensure `core` migrations are up to date.
 
 3. **Run Server**:
    ```bash
