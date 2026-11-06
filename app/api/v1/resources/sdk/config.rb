@@ -50,7 +50,7 @@ module V1
                       custom_branding: channel.custom_branding?
                     },
                     theme: {
-                      primary_color: channel.ui_configurations&.dig("primary_color").presence || channel.theme_color.presence || "#4F46E5",
+                      primary_color: channel.ui_configurations&.dig("primary_color").presence || channel.theme_color.presence || "#3b82f6",
                       header_title_color: channel.header_title_color.presence || "#FFFFFF"
                     },
                     is_online: !is_offline

@@ -6,7 +6,7 @@ module V1
       resource :system do
         desc 'Get system configuration, supported versions, and feature flags'
         get :config do
-          cable_url = ENV['ACTION_CABLE_URL'].presence || 'wss://ws.deskbolic.com'
+          cable_url = ENV['ACTION_CABLE_URL'].presence || 'wss://ws-rely.capiller.com'
           success(
             data: {
               api_version: '1.0.0',
