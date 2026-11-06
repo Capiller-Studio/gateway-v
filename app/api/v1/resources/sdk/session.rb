@@ -98,7 +98,7 @@ module V1
               channel: channel
             )
 
-            cable_url = ENV.fetch("ACTION_CABLE_URL", "wss://ws.deskbolic.com/cable")
+            cable_url = ENV.fetch("ACTION_CABLE_URL", "wss://ws-rely.capiller.com/cable")
 
             success(
               data: {

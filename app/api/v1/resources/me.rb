@@ -115,7 +115,7 @@ module V1
 
         desc 'Get real-time ActionCable WebSocket connection details'
         get :cable_token do
-          cable_url = ENV['ACTION_CABLE_URL'].presence || 'wss://ws.deskbolic.com'
+          cable_url = ENV['ACTION_CABLE_URL'].presence || 'wss://ws-rely.capiller.com'
           success(
             data: {
               connection_token: current_user.connection_token,
